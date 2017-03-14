@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class conexion {
-
-//    private Connection con;
-//    private Statement sta;
+    
 //    private final String driver = "com.mysql.jdbc.Driver";
 //    private final String user = "root";
 //    private final String password = "MYSQL";
@@ -50,13 +48,27 @@ public class conexion {
         return con;
     }
     
+    //metodos ventana princiapl
+    
+    public ResultSet GetDtataBases() throws SQLException{
+        return sta.executeQuery("SHOW DATABASES;");
+    }
+    
+    public void SelectDataBase(String bd) throws SQLException{
+        sta.executeUpdate("USE " + bd + ";");
+    }
+    
+    //metodos ventana bases de datos
+    
+    public ResultSet GetTables(String bd) throws SQLException{
+        return sta.executeQuery("SHOW TABLES;");
+    }
+    
     public ResultSet GetColumnas(String table) throws SQLException{
         return sta.executeQuery("DESCRIBE " + table + ";");
     }
 
-    public ResultSet GetTables(String bd) throws SQLException{
-        return sta.executeQuery("SHOW TABLES;");
-    }
+    //metodos ventaba tablas
     
     public int agregar(String datos, String table) throws SQLException {
         return sta.executeUpdate("INSERT INTO " + table + " values(" + datos + ");");
@@ -65,7 +77,15 @@ public class conexion {
     public ResultSet GetDatos(String table) throws SQLException {
         return sta.executeQuery("SELECT * FROM " + table + ";");
     }
-
+    
+    public void borrar(String dato, String valor, String table) throws SQLException {
+        sta.executeUpdate("DELETE FROM " + table + " WHERE " + dato + " = " + valor + ";");
+    }
+    
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    
     public ResultSet GetDatosId(String id) throws SQLException {
         return sta.executeQuery("SELECT nombre, pasword FROM tabla1 WHERE Id = '" + id + "'");
     }
@@ -81,10 +101,6 @@ public class conexion {
     public void actualizar_pass(String id, String newpass) throws SQLException {
 //        System.out.println("UPDATE tabla1 SET pasword = " + newpass + " where Id = " + id);
         sta.executeUpdate("UPDATE tabla1 SET pasword = '" + newpass + "' where Id = " + id);
-    }
-
-    public void borrar(String id) throws SQLException {
-        sta.executeUpdate("DELETE FROM tabla1 WHERE Id = " + id);
     }
 
     public void borrarTodo(String table) throws SQLException {

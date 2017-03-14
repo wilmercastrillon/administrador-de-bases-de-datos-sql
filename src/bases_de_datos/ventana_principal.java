@@ -3,29 +3,32 @@ package bases_de_datos;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
-public class ventana_bd extends javax.swing.JFrame {
+public class ventana_principal extends javax.swing.JFrame {
 
-    ventana_principal ant;
-    ventana_tabla tab;
+    inicio ini;
+    ventana_bd vbd;
     conexion x3;
     Vector<String> vec = new Vector<>();
 
-    public ventana_bd(conexion x3, ventana_principal vp, String bd) {
-        this.ant = vp;
+    public ventana_principal(conexion x3, inicio ini) {
+        this.ini = ini;
         this.x3 = x3;
         initComponents();
         setLocationRelativeTo(null);
 
         try {
-            ResultSet res = x3.GetTables(bd);
+            ResultSet res = x3.GetDtataBases();
+            String h;
             while (res.next()) {
-                String h = res.getString("Tables_in_" + bd);
-                System.out.println("table : " + h);
+                h = res.getString(1);
+                System.out.println("data base: " + h);
                 vec.add(h);
                 tablas.addItem(h);
             }
-            System.out.println("");
         } catch (SQLException e) {
         }
     }
@@ -41,7 +44,7 @@ public class ventana_bd extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("tablas en la base de datos");
+        jLabel1.setText("bases de datos");
 
         tablas.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "----------" }));
 
@@ -70,7 +73,7 @@ public class ventana_bd extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(tablas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 126, Short.MAX_VALUE))
+                        .addGap(0, 190, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -99,16 +102,24 @@ public class ventana_bd extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         setVisible(false);
-        ant.setVisible(true);
+        ini.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (tablas.getSelectedIndex() == 0) {
             return;
         }
-        tab = new ventana_tabla(x3, this, vec.get(tablas.getSelectedIndex() - 1));
+        System.out.println("selecciono a " + vec.get(tablas.getSelectedIndex() - 1));
+        System.out.println("");
+        try {
+            x3.SelectDataBase(vec.get(tablas.getSelectedIndex() - 1));
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error", "Error al seleccionar la\n-base de datos", 1);
+            return;
+        }
+        vbd = new ventana_bd(x3, this, vec.get(tablas.getSelectedIndex() - 1));
         setVisible(false);
-        tab.setVisible(true);
+        vbd.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void main(String args[]) {
@@ -125,14 +136,17 @@ public class ventana_bd extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ventana_bd.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ventana_bd.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ventana_bd.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ventana_bd.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         java.awt.EventQueue.invokeLater(new Runnable() {

@@ -15,6 +15,7 @@ public class ventana_tabla extends javax.swing.JFrame {
     validaciones val = new validaciones();
     DefaultTableModel modelo;
     ventana_bd ven_bd;
+    Vector<String> col;
 
     public ventana_tabla(conexion x2, ventana_bd vbd, String t) {
         x = x2;
@@ -25,12 +26,13 @@ public class ventana_tabla extends javax.swing.JFrame {
         modelo = new DefaultTableModel();
         cargar();
         setLocationRelativeTo(null);
+
     }
 
     public void cargar() {
         try {
             ResultSet rs = x.GetColumnas(tabla);
-            Vector<String> col = new Vector<>();
+            col = new Vector<>();
             while (rs.next()) {
                 String field = rs.getString("Field");
 //                System.out.println(field);
@@ -41,6 +43,7 @@ public class ventana_tabla extends javax.swing.JFrame {
                 rs.getString("key");
                 rs.getString("extra");
                 modelo.addColumn(field);
+                jcombobox_columnas.addItem(field);
             }
             jTable1.setModel(modelo);
 
@@ -66,7 +69,6 @@ public class ventana_tabla extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         registro = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         borrar = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jButton3 = new javax.swing.JButton();
@@ -84,6 +86,9 @@ public class ventana_tabla extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jcombobox_columnas = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -111,8 +116,6 @@ public class ventana_tabla extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-
-        jLabel4.setText("ID");
 
         borrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -168,6 +171,12 @@ public class ventana_tabla extends javax.swing.JFrame {
 
         jLabel2.setText("ingrese los datos separados por comas");
 
+        jcombobox_columnas.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "----------" }));
+
+        jLabel3.setText("Borrar por:");
+
+        jLabel4.setText("ingrese el dato");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -181,41 +190,46 @@ public class ventana_tabla extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton5))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(registro, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel1)
                                         .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGap(15, 15, 15)))
-                                    .addComponent(jButton2)
-                                    .addComponent(registro, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel1)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(59, 59, 59)
-                                        .addComponent(jButton1))
-                                    .addComponent(jLabel2))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton3)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addGap(59, 59, 59)
+                                            .addComponent(jButton1))
+                                        .addComponent(jLabel2))
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel5)
+                                    .addGap(32, 32, 32)
+                                    .addComponent(mostar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(90, 90, 90)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel7)
+                                        .addComponent(jLabel6))
+                                    .addGap(18, 18, 18)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(llave, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                                        .addComponent(nuevapassword))
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButton6))
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel3)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jcombobox_columnas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButton2)))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(32, 32, 32)
-                                .addComponent(mostar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(90, 90, 90)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel6))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(llave, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                                    .addComponent(nuevapassword))
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton6)))
+                                .addGap(207, 207, 207)
+                                .addComponent(jButton3)))
                         .addGap(0, 14, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -237,12 +251,14 @@ public class ventana_tabla extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jcombobox_columnas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(jButton3)
+                    .addComponent(jLabel4)
+                    .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -286,7 +302,6 @@ public class ventana_tabla extends javax.swing.JFrame {
             x.agregar(str.toString(), tabla);
             modelo.addRow(h);
         } catch (SQLException ex) {
-//            Logger.getLogger(ventana_tabla.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, "Error al registrar\nverifique los datos", "Error", 0);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -299,26 +314,29 @@ public class ventana_tabla extends javax.swing.JFrame {
     }//GEN-LAST:event_registroKeyTyped
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JOptionPane.showMessageDialog(null, "aun no disponible");
-//        try {
-//            if (val.ID_correcto(borrar.getText())) {
-//                x.borrar(borrar.getText());
-//                JOptionPane.showMessageDialog(null, "eliminar exitoso");
-//
-//                for (int i = 0; i < modelo.getRowCount(); i++) {
-//                    String id = modelo.getValueAt(i, 0).toString();
-//                    if (id.equals(borrar.getText())) {
-//                        modelo.removeRow(i);
-//                        return;
-//                    }
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(null, "formato incorrecto", "Error", 2);
-//            }
-//        } catch (SQLException ex) {
-//            Logger.getLogger(ventana_tabla.class.getName()).log(Level.SEVERE, null, ex);
-//            JOptionPane.showMessageDialog(null, "Error al borrar", "Error", 0);
-//        }
+        int index = jcombobox_columnas.getSelectedIndex();
+        if (index == 0) {
+            return;
+        }
+        
+        try {
+            String h = col.get(index - 1);
+            x.borrar(h, borrar.getText(), tabla);
+            
+            for (int i = 0; i < modelo.getColumnCount(); i++) {
+                if (h.equals(modelo.getColumnName(i))) {
+                    
+                    for (int j = 0; j < modelo.getRowCount(); j++) {
+                        if (modelo.getValueAt(j, i).toString().equals(borrar.getText())) {
+                            modelo.removeRow(j);
+                            j--;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al borrar\nverifique los datos", "Error", 0);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarActionPerformed
@@ -424,6 +442,7 @@ public class ventana_tabla extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -432,6 +451,7 @@ public class ventana_tabla extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JComboBox jcombobox_columnas;
     private javax.swing.JTextField llave;
     private javax.swing.JTextField mostar;
     private javax.swing.JTextField nuevapassword;
