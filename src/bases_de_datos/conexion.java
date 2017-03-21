@@ -79,7 +79,11 @@ public class conexion {
     }
     
     public void borrar(String dato, String valor, String table) throws SQLException {
-        sta.executeUpdate("DELETE FROM " + table + " WHERE " + dato + " = " + valor + ";");
+        sta.executeUpdate("DELETE FROM " + table + " WHERE " + dato + " = '" + valor + "';");
+    }
+    
+    public int Actualizar(String tabla, String datos) throws SQLException{
+        return sta.executeUpdate("UPDATE " + tabla + " " + datos);
     }
     
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
