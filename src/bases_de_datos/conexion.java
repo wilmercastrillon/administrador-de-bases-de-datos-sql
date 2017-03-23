@@ -11,7 +11,7 @@ public class conexion {
 //    private final String driver = "com.mysql.jdbc.Driver";
 //    private final String user = "root";
 //    private final String password = "MYSQL";
-//    private final String url = "jdbc:mysql://localhost/prueba";
+//    private final String url = "jdbc:mysql://localhost/nombre_base_de_datos";
     private Connection con;
     private Statement sta;
     private final String driver = "com.mysql.jdbc.Driver";
@@ -32,13 +32,13 @@ public class conexion {
             con = DriverManager.getConnection(url, user, password);
             sta = con.createStatement();
             if (con != null) {
-                System.out.println("se ha conectado!!!");
+                System.out.println("se ha conectado!!!\n");
             } else {
-                System.out.println("no se ha conectado");
+                System.out.println("no se ha conectado\n");
                 return false;
             }
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("ha ocurrido un error inesperado");
+            System.out.println("ha ocurrido un error inesperado\n");
             return false;
         }
         return true;
@@ -75,15 +75,21 @@ public class conexion {
     }
 
     public ResultSet GetDatos(String table) throws SQLException {
-        return sta.executeQuery("SELECT * FROM " + table + ";");
+        String z = "SELECT * FROM " + table + ";";
+//        System.out.println(z);
+        return sta.executeQuery(z);
     }
     
     public void borrar(String dato, String valor, String table) throws SQLException {
-        sta.executeUpdate("DELETE FROM " + table + " WHERE " + dato + " = '" + valor + "';");
+        String z = "DELETE FROM " + table + " WHERE " + dato + " = '" + valor + "';";
+//        System.out.println(z);
+        sta.executeUpdate(z);
     }
     
     public int Actualizar(String tabla, String datos) throws SQLException{
-        return sta.executeUpdate("UPDATE " + tabla + " " + datos);
+        String z = "UPDATE " + tabla + " " + datos;
+//        System.out.println(z);
+        return sta.executeUpdate(z);
     }
     
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

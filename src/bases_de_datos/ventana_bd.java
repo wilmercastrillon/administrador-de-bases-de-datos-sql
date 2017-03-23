@@ -25,9 +25,9 @@ public class ventana_bd extends javax.swing.JFrame {
                 vec.add(h);
                 tablas.addItem(h);
             }
-            System.out.println("");
         } catch (SQLException e) {
         }
+        System.out.println("");
     }
 
     @SuppressWarnings("unchecked")
@@ -43,7 +43,7 @@ public class ventana_bd extends javax.swing.JFrame {
 
         jLabel1.setText("tablas en la base de datos");
 
-        tablas.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "----------" }));
+        tablas.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
 
         jButton1.setText("seleccionar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -66,18 +66,18 @@ public class ventana_bd extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(tablas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 126, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton1)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jButton2)
-                                .addGap(15, 15, 15)))))
+                                .addGap(15, 15, 15))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tablas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 126, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
