@@ -11,7 +11,7 @@ public class inicio extends javax.swing.JFrame {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
-        setTitle("bases de datos v0.21");
+        setTitle("bases de datos v0.56");
     }
 
     @SuppressWarnings("unchecked")
