@@ -1,8 +1,10 @@
 package bases_de_datos;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JOptionPane;
 
-public class inicio extends javax.swing.JFrame {
+public class inicio extends javax.swing.JFrame implements KeyListener{
 
     conexion x2;
     ventana_principal v;
@@ -11,7 +13,8 @@ public class inicio extends javax.swing.JFrame {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
-        setTitle("bases de datos v0.56");
+        setTitle("bases de datos v0.68");
+        jButton1.addKeyListener(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -103,7 +106,6 @@ public class inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void puertoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_puertoActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_puertoActionPerformed
 
     public static void main(String args[]) {
@@ -145,4 +147,16 @@ public class inicio extends javax.swing.JFrame {
     private javax.swing.JTextField puerto;
     private javax.swing.JTextField user;
     // End of variables declaration//GEN-END:variables
+
+    public void keyTyped(KeyEvent ke) {
+    }
+
+    public void keyPressed(KeyEvent ke) {
+        if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
+            jButton1ActionPerformed(null);
+        }
+    }
+
+    public void keyReleased(KeyEvent ke) {
+    }
 }

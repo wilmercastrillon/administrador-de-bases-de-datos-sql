@@ -8,8 +8,8 @@ public class ventana_bd extends javax.swing.JFrame {
 
     ventana_principal ant;
     ventana_tabla tab;
-    conexion x3;
-    Vector<String> vec = new Vector<>();
+    private conexion x3;
+    private Vector<String> vec = new Vector<>();
 
     public ventana_bd(conexion x3, ventana_principal vp, String bd) {
         this.ant = vp;
@@ -106,7 +106,7 @@ public class ventana_bd extends javax.swing.JFrame {
         if (tablas.getSelectedIndex() == 0) {
             return;
         }
-        tab = new ventana_tabla(x3, this, vec.get(tablas.getSelectedIndex() - 1));
+        tab = new ventana_tabla(x3, this, vec.get(tablas.getSelectedIndex() - 1), vec);
         setVisible(false);
         tab.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed

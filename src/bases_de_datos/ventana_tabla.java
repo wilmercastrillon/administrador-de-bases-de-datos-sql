@@ -1,6 +1,7 @@
 package bases_de_datos;
 
 //import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -17,15 +18,17 @@ public class ventana_tabla extends javax.swing.JFrame {
     private final conexion x;
     private DefaultTableModel modelo, model_col;
     ventana_bd ven_bd;
-    private boolean inserta;
+    private boolean inserta, recarga;
+    private final Vector<String> otras_tablas;
 
-    public ventana_tabla(conexion x2, ventana_bd vbd, String t) {
+    public ventana_tabla(conexion x2, ventana_bd vbd, String t, Vector t2) {
         x = x2;
         ven_bd = vbd;
         tabla = t;
-        inserta = false;
+        inserta = recarga = false;
+        otras_tablas = t2;
         initComponents();
-        setResizable(false);
+//        setResizable(false);
         cargar();
         EventoJtable(modelo);
         setLocationRelativeTo(null);
@@ -33,6 +36,7 @@ public class ventana_tabla extends javax.swing.JFrame {
 
     public void cargar() {
         try {
+            recarga = true;
             modelo = new DefaultTableModel();
             model_col = new DefaultTableModel() {
                 @Override
@@ -50,8 +54,16 @@ public class ventana_tabla extends javax.swing.JFrame {
             model_col.addColumn("Extra");
             jcombobox_columnas.removeAllItems();
             columnas_borrar.removeAllItems();
+            columnas_pk.removeAllItems();
+            columna_fk.removeAllItems();
+            tabla_referencia.removeAllItems();
+            atributo_referencia.removeAllItems();
             jcombobox_columnas.addItem("---------------");
             columnas_borrar.addItem("---------------");
+            columnas_pk.addItem("---------------");
+            columna_fk.addItem("---------------");
+            atributo_referencia.addItem("---------------");
+            tabla_referencia.addItem("---------------");
 
             while (rs.next()) {
                 aux = new Vector<>();
@@ -67,6 +79,8 @@ public class ventana_tabla extends javax.swing.JFrame {
                 modelo.addColumn(field);
                 jcombobox_columnas.addItem(field);
                 columnas_borrar.addItem(field);
+                columnas_pk.addItem(field);
+                columna_fk.addItem(field);
             }
             jTable1.setModel(modelo);
             tabla_columnas.setModel(model_col);
@@ -74,7 +88,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             ResultSet res = x.GetDatos(tabla);
             int q = 0;
 
-            System.out.println(col.toString());
+            System.out.println(col.toString() + "\n");
             while (res.next()) {
                 Vector<String> datos = new Vector<>();
                 for (int i = 0; i < col.size(); i++) {
@@ -83,9 +97,13 @@ public class ventana_tabla extends javax.swing.JFrame {
                 modelo.addRow(datos);
                 q++;
             }
+
+            for (int i = 0; i < otras_tablas.size(); i++) {
+                tabla_referencia.addItem(otras_tablas.get(i));
+            }
+            recarga = false;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            System.out.println(e.getSQLState());
             JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
         }
     }
@@ -157,6 +175,17 @@ public class ventana_tabla extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JSeparator();
         columnas_borrar = new javax.swing.JComboBox();
         jButton6 = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JSeparator();
+        columnas_pk = new javax.swing.JComboBox();
+        jButton7 = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JSeparator();
+        jButton8 = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        atributo_referencia = new javax.swing.JComboBox();
+        jLabel9 = new javax.swing.JLabel();
+        tabla_referencia = new javax.swing.JComboBox();
+        jLabel10 = new javax.swing.JLabel();
+        columna_fk = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -213,23 +242,58 @@ public class ventana_tabla extends javax.swing.JFrame {
             }
         });
 
+        columnas_pk.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
+
+        jButton7.setText("Crear llave primaria");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jButton8.setText("Crear llave foranea");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setText("atributo de referencia");
+
+        atributo_referencia.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
+
+        jLabel9.setText("tabla de referencia");
+
+        tabla_referencia.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
+        tabla_referencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tabla_referenciaActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setText("atributo llave");
+
+        columna_fk.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator2)
+                            .addComponent(jSeparator3)
+                            .addComponent(jSeparator4)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButton4)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addComponent(jLabel5)
                                         .addGap(18, 18, 18)
-                                        .addComponent(nombre_col, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(nombre_col, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addComponent(jLabel6)
                                         .addGap(18, 18, 18)
@@ -241,25 +305,46 @@ public class ventana_tabla extends javax.swing.JFrame {
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addComponent(boton_default)
                                         .addGap(18, 18, 18)
-                                        .addComponent(valor_default, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(valor_default, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(no_nulo))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jButton6)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(columnas_borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jButton7)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(columnas_pk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(0, 8, Short.MAX_VALUE)))
-                        .addGap(18, 18, 18))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(no_nulo)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jButton6)
+                                .addComponent(jLabel8)
                                 .addGap(18, 18, 18)
-                                .addComponent(columnas_borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(atributo_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addGap(18, 18, 18)
+                                .addComponent(tabla_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton8)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel10)
+                                .addGap(18, 18, 18)
+                                .addComponent(columna_fk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
@@ -273,9 +358,8 @@ public class ventana_tabla extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(boton_default)
-                            .addComponent(valor_default, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(no_nulo)
+                            .addComponent(valor_default, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(no_nulo))
                         .addGap(18, 18, 18)
                         .addComponent(jButton4)
                         .addGap(18, 18, 18)
@@ -283,12 +367,31 @@ public class ventana_tabla extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton6)
-                            .addComponent(columnas_borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(98, Short.MAX_VALUE))
+                            .addComponent(columnas_borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton7)
+                            .addComponent(columnas_pk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(tabla_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10)
+                    .addComponent(columna_fk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(atributo_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton8)))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Editar", jPanel2);
+        jTabbedPane1.addTab("Editar Tabla", jPanel2);
 
         jLabel1.setText("agregar nueva tupla");
 
@@ -407,7 +510,7 @@ public class ventana_tabla extends javax.swing.JFrame {
                             .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jButton2)
-                        .addGap(0, 108, Short.MAX_VALUE))))
+                        .addGap(0, 119, Short.MAX_VALUE))))
         );
 
         jTabbedPane1.addTab("Datos", jPanel1);
@@ -438,8 +541,7 @@ public class ventana_tabla extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1)
                 .addGap(18, 18, 18)
-                .addComponent(jButton5)
-                .addContainerGap())
+                .addComponent(jButton5))
         );
 
         pack();
@@ -464,6 +566,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             modelo.addRow(h);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error al registrar\nverifique los datos", "Error", 0);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
         inserta = false;
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -498,6 +601,9 @@ public class ventana_tabla extends javax.swing.JFrame {
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al borrar\nverifique los datos", "Error", 0);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un\nerror inesperado", "Error", 0);
         }
         inserta = false;
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -519,7 +625,8 @@ public class ventana_tabla extends javax.swing.JFrame {
                 modelo.removeRow(0);
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error borrar todo", "Error", 0);
+            JOptionPane.showMessageDialog(null, "Error al borrar todo", "Error", 0);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
         inserta = false;
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -550,8 +657,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             cargar();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error verifique los datos", "Error", 0);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -565,10 +671,65 @@ public class ventana_tabla extends javax.swing.JFrame {
             cargar();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al eliminar", "Error", 0);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
+        }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        if (columnas_pk.getSelectedIndex() == 0) {
+            return;
+        }
+
+        try {
+            x.CrearLlavePrimaria(tabla, columnas_pk.getSelectedItem().toString());
+            cargar();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al crear\nllave primaria", "Error", 0);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        if (atributo_referencia.getSelectedIndex() == 0 || atributo_referencia.getSelectedIndex() == 0
+                || tabla_referencia.getSelectedIndex() == 0) {
+            return;
+        }
+        try {
+            x.CrearLlaveForanea(tabla, columna_fk.getSelectedItem().toString(),
+                    tabla_referencia.getSelectedItem().toString(), atributo_referencia.getSelectedItem().toString());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al crear\nllave foranea", "Error", 0);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+        }
+
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void tabla_referenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabla_referenciaActionPerformed
+        if (recarga) {
+            return;
+        }
+        if (tabla_referencia.getSelectedIndex() == 0) {
+            atributo_referencia.removeAllItems();
+            atributo_referencia.addItem("---------------");
+            return;
+        }
+        try {
+            atributo_referencia.removeAllItems();
+            atributo_referencia.addItem("---------------");
+            ResultSet res = x.GetColumnas(tabla_referencia.getSelectedItem().toString());
+            while (res.next()) {
+                atributo_referencia.addItem(res.getString("Field"));
+                res.getString("type");
+                res.getString("null");
+                res.getString("key");
+                res.getString("extra");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al cargar datos\nde otras tablas", "Error", 0);
+        }
+    }//GEN-LAST:event_tabla_referenciaActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -602,28 +763,38 @@ public class ventana_tabla extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox atributo_referencia;
     private javax.swing.JTextField borrar;
     private javax.swing.JRadioButton boton_default;
+    private javax.swing.JComboBox columna_fk;
     private javax.swing.JComboBox columnas_borrar;
+    private javax.swing.JComboBox columnas_pk;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JComboBox jcombobox_columnas;
@@ -632,6 +803,7 @@ public class ventana_tabla extends javax.swing.JFrame {
     private javax.swing.JTextField nombre_col;
     private javax.swing.JTextField registro;
     private javax.swing.JTable tabla_columnas;
+    private javax.swing.JComboBox tabla_referencia;
     private javax.swing.JComboBox tipo_datos;
     private javax.swing.JTextField valor_default;
     // End of variables declaration//GEN-END:variables

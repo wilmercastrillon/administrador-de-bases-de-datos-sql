@@ -114,4 +114,17 @@ public class conexion {
 //        System.out.println(z);
         return sta.executeUpdate(z);
     }
+    
+    public int CrearLlavePrimaria(String tabla, String columna) throws SQLException{
+        String z = "ALTER TABLE " + tabla + " ADD PRIMARY KEY (" + columna+ ");";
+//        System.out.println(z);
+        return sta.executeUpdate(z);
+    }
+    
+    public int CrearLlaveForanea(String tabla, String atri, String tabla_ref, String atri_ref) throws SQLException{
+        String z = "ALTER TABLE " + tabla + " ADD FOREIGN KEY(" + atri + 
+                ") REFERENCES " + tabla_ref + "(" + atri_ref + ");";
+//        System.out.println(z);
+        return sta.executeUpdate(z);
+    }
 }
