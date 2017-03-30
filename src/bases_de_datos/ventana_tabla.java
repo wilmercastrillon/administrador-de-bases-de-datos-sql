@@ -1,12 +1,15 @@
 package bases_de_datos;
 
 //import java.awt.event.MouseEvent;
+import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -17,25 +20,32 @@ public class ventana_tabla extends javax.swing.JFrame {
     private final conexion x;
     private DefaultTableModel modelo, model_col;
     ventana_bd ven_bd;
-    private boolean inserta;
+    private boolean inserta, agrega;
     private final Vector<String> otras_tablas;
+    private JPopupMenu menu;
 
     public ventana_tabla(conexion x2, ventana_bd vbd, String t, Vector t2) {
         x = x2;
         ven_bd = vbd;
         tabla = t;
-        inserta = false;
+        inserta = agrega = false;
         otras_tablas = t2;
         initComponents();
 //        setResizable(false);
         cargar();
+        menu = new JPopupMenu();
+        menu.add(new JMenuItem("Add New Row"));
+        menu.add(new JMenuItem("Remove Current Row"));
+        menu.add(new JMenuItem("Remove All Rows"));
+        jTable1.setComponentPopupMenu(menu);
         EventoJtable(modelo);
+        setEventoMouseClicked(jTable1);
         setLocationRelativeTo(null);
     }
 
     public void cargar() {
         try {
-            System.out.println("carga");
+            agrega = true;
             modelo = new DefaultTableModel();
             model_col = new DefaultTableModel() {
                 @Override
@@ -100,6 +110,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             for (int i = 0; i < otras_tablas.size(); i++) {
                 tabla_referencia.addItem(otras_tablas.get(i));
             }
+            agrega = false;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
@@ -136,22 +147,21 @@ public class ventana_tabla extends javax.swing.JFrame {
         });
     }
 
-//    private void setEventoMouseClicked(JTable tbl) {
-//        tbl.addMouseListener(new java.awt.event.MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                editar_tabla(e);
-//            }
-//        });
-//    }
-//    private void editar_tabla(java.awt.event.MouseEvent evt) {
-//        String cadena = "";
-//
-//        if (evt.getClickCount() == 1) {
-//            return;
-//        }
-//        System.out.println("doble click");
-//    }
+    private void setEventoMouseClicked(javax.swing.JTable tbl) {
+        tbl.addMouseListener(new java.awt.event.MouseAdapter() {
+
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    return;
+                }
+                System.out.println("doble click");
+                java.awt.Point point = e.getPoint();
+                int currentRow = tbl.rowAtPoint(point);
+                tbl.setRowSelectionInterval(currentRow, currentRow);
+            }
+        });
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -694,6 +704,9 @@ public class ventana_tabla extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void tabla_referenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabla_referenciaActionPerformed
+        if (agrega) {
+            return;
+        }
         if (tabla_referencia.getSelectedIndex() == 0) {
             atributo_referencia.removeAllItems();
             atributo_referencia.addItem("---------------");
@@ -724,7 +737,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error al crear\nllave foranea", "Error", 0);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
-        
+
     }//GEN-LAST:event_jButton8ActionPerformed
 
     public static void main(String args[]) {

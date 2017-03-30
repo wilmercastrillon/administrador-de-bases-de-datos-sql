@@ -8,10 +8,6 @@ import java.sql.Statement;
 
 public class conexion {
     
-//    private final String driver = "com.mysql.jdbc.Driver";
-//    private final String user = "root";
-//    private final String password = "MYSQL";
-//    private final String url = "jdbc:mysql://localhost/nombre_base_de_datos";
     private Connection con;
     private Statement sta;
     private final String driver = "com.mysql.jdbc.Driver";
@@ -48,6 +44,11 @@ public class conexion {
         return con;
     }
     
+    public void desconectar() {
+        con = null;
+        System.out.println("desconectado");
+    }
+    
     //metodos ventana princiapl
     
     public ResultSet GetDtataBases() throws SQLException{
@@ -71,7 +72,9 @@ public class conexion {
     //metodos ventaba tablas
     
     public int agregar(String datos, String table) throws SQLException {
-        return sta.executeUpdate("INSERT INTO " + table + " values(" + datos + ");");
+        String z = "INSERT INTO " + table + " values(" + datos + ");";
+//        System.out.println(z);
+        return sta.executeUpdate(z);
     }
 
     public ResultSet GetDatos(String table) throws SQLException {
@@ -92,34 +95,20 @@ public class conexion {
         return sta.executeUpdate(z);
     }
     
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    public int BorrarTodo(String tabla) throws SQLException{
+        return sta.executeUpdate("DELETE FROM " + tabla + ";");
+    }
     
-    public ResultSet GetDatosId(String id) throws SQLException {
-        return sta.executeQuery("SELECT nombre, pasword FROM tabla1 WHERE Id = '" + id + "'");
+    public int AgregarColumna(String datos, String tabla) throws SQLException{
+        String z = "ALTER TABLE " + tabla + " ADD(" + datos + ");";
+//        System.out.println(z);
+        return sta.executeUpdate(z);
     }
-
-    public ResultSet GetDatosNombre(String nombre) throws SQLException {
-        return sta.executeQuery("SELECT pasword FROM tabla1 WHERE nombre = '" + nombre + "'");
-    }
-
-    public ResultSet GetDatosAdmin(String nombre) throws SQLException { //xxx
-        return sta.executeQuery("SELECT pasword FROM administradores WHERE nombre = '" + nombre + "'");
-    }
-
-    public void actualizar_pass(String id, String newpass) throws SQLException {
-//        System.out.println("UPDATE tabla1 SET pasword = " + newpass + " where Id = " + id);
-        sta.executeUpdate("UPDATE tabla1 SET pasword = '" + newpass + "' where Id = " + id);
-    }
-
-    public void borrarTodo(String table) throws SQLException {
-        sta.executeUpdate("DELETE FROM " + table + ";");
-    }
-
-    public void desconectar() {
-        con = null;
-        System.out.println("desconectado");
+    
+    public int BorrarColumna(String tabla, String columna) throws SQLException{
+        String z = "ALTER TABLE " + tabla + " DROP " + columna + ";";
+//        System.out.println(z);
+        return sta.executeUpdate(z);
     }
     
     public int CrearLlavePrimaria(String tabla, String columna) throws SQLException{
