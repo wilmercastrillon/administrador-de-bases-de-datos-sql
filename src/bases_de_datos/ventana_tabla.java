@@ -1,7 +1,6 @@
 package bases_de_datos;
 
 //import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -18,14 +17,14 @@ public class ventana_tabla extends javax.swing.JFrame {
     private final conexion x;
     private DefaultTableModel modelo, model_col;
     ventana_bd ven_bd;
-    private boolean inserta, recarga;
+    private boolean inserta;
     private final Vector<String> otras_tablas;
 
     public ventana_tabla(conexion x2, ventana_bd vbd, String t, Vector t2) {
         x = x2;
         ven_bd = vbd;
         tabla = t;
-        inserta = recarga = false;
+        inserta = false;
         otras_tablas = t2;
         initComponents();
 //        setResizable(false);
@@ -36,7 +35,7 @@ public class ventana_tabla extends javax.swing.JFrame {
 
     public void cargar() {
         try {
-            recarga = true;
+            System.out.println("carga");
             modelo = new DefaultTableModel();
             model_col = new DefaultTableModel() {
                 @Override
@@ -56,8 +55,8 @@ public class ventana_tabla extends javax.swing.JFrame {
             columnas_borrar.removeAllItems();
             columnas_pk.removeAllItems();
             columna_fk.removeAllItems();
-            tabla_referencia.removeAllItems();
             atributo_referencia.removeAllItems();
+            tabla_referencia.removeAllItems();
             jcombobox_columnas.addItem("---------------");
             columnas_borrar.addItem("---------------");
             columnas_pk.addItem("---------------");
@@ -101,7 +100,6 @@ public class ventana_tabla extends javax.swing.JFrame {
             for (int i = 0; i < otras_tablas.size(); i++) {
                 tabla_referencia.addItem(otras_tablas.get(i));
             }
-            recarga = false;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
@@ -658,6 +656,8 @@ public class ventana_tabla extends javax.swing.JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error verifique los datos", "Error", 0);
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -672,6 +672,8 @@ public class ventana_tabla extends javax.swing.JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al eliminar", "Error", 0);
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -691,6 +693,25 @@ public class ventana_tabla extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton7ActionPerformed
 
+    private void tabla_referenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabla_referenciaActionPerformed
+        if (tabla_referencia.getSelectedIndex() == 0) {
+            atributo_referencia.removeAllItems();
+            atributo_referencia.addItem("---------------");
+            return;
+        }
+        try {
+            ResultSet res = x.GetColumnas(tabla_referencia.getSelectedItem().toString());
+            atributo_referencia.removeAllItems();
+            atributo_referencia.addItem("---------------");
+            while (res.next()) {
+                atributo_referencia.addItem(res.getString("Field"));
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+        }
+    }//GEN-LAST:event_tabla_referenciaActionPerformed
+
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         if (atributo_referencia.getSelectedIndex() == 0 || atributo_referencia.getSelectedIndex() == 0
                 || tabla_referencia.getSelectedIndex() == 0) {
@@ -703,33 +724,8 @@ public class ventana_tabla extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error al crear\nllave foranea", "Error", 0);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
-
+        
     }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void tabla_referenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabla_referenciaActionPerformed
-        if (recarga) {
-            return;
-        }
-        if (tabla_referencia.getSelectedIndex() == 0) {
-            atributo_referencia.removeAllItems();
-            atributo_referencia.addItem("---------------");
-            return;
-        }
-        try {
-            atributo_referencia.removeAllItems();
-            atributo_referencia.addItem("---------------");
-            ResultSet res = x.GetColumnas(tabla_referencia.getSelectedItem().toString());
-            while (res.next()) {
-                atributo_referencia.addItem(res.getString("Field"));
-                res.getString("type");
-                res.getString("null");
-                res.getString("key");
-                res.getString("extra");
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al cargar datos\nde otras tablas", "Error", 0);
-        }
-    }//GEN-LAST:event_tabla_referenciaActionPerformed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
