@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -19,19 +20,18 @@ public class ventana_tabla extends javax.swing.JFrame {
     private final String tabla;
     private final conexion x;
     private DefaultTableModel modelo, model_col;
-    ventana_bd ven_bd;
+    ventana_principal ven_bd;
     private boolean inserta, agrega;
     private final Vector<String> otras_tablas;
     private JPopupMenu menu;
 
-    public ventana_tabla(conexion x2, ventana_bd vbd, String t, Vector t2) {
+    public ventana_tabla(conexion x2, ventana_principal vbd, String t, Vector t2) {
         x = x2;
         ven_bd = vbd;
         tabla = t;
         inserta = agrega = false;
         otras_tablas = t2;
         initComponents();
-//        setResizable(false);
         cargar();
         menu = new JPopupMenu();
         menu.add(new JMenuItem("Add New Row"));
@@ -41,10 +41,13 @@ public class ventana_tabla extends javax.swing.JFrame {
         EventoJtable(modelo);
         setEventoMouseClicked(jTable1);
         setLocationRelativeTo(null);
+//        setResizable(false);
     }
 
     public void cargar() {
         try {
+            System.out.println("cargar!!!");
+            System.out.println("entran : " + otras_tablas.toString());
             agrega = true;
             modelo = new DefaultTableModel();
             model_col = new DefaultTableModel() {

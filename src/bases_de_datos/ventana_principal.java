@@ -1,58 +1,115 @@
 package bases_de_datos;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 public class ventana_principal extends javax.swing.JFrame {
 
     inicio ini;
-    ventana_bd vbd;
-    conexion x3;
-    Vector<String> vec = new Vector<>();
+    ventana_tabla vbd;
+    private final conexion x3;
+    private Vector<String> vec = new Vector<>();
+    private DefaultTreeModel modelo_arbol;
+    private DefaultMutableTreeNode raiz;
 
     public ventana_principal(conexion x3, inicio ini) {
         this.ini = ini;
         this.x3 = x3;
+        raiz = new DefaultMutableTreeNode("Bases de Datos");
+        modelo_arbol = new DefaultTreeModel(raiz);
         initComponents();
-        setLocationRelativeTo(null);
+        cargar();
+        jTree1.setModel(modelo_arbol);
+        jTree1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                if (me.getClickCount() == 1) {
+                    return;
+                }
+                TreePath tp = jTree1.getPathForLocation(me.getX(), me.getY());
+                if (tp != null && tp.getPathCount() == 3) {
+                    System.out.println(tp.toString());
+                    System.out.println(tp.getLastPathComponent().toString());
+                    System.out.println(tp.getPathComponent(1).toString());
 
+                    try {
+                        String q = tp.getPathComponent(1).toString();
+                        System.out.println("usamos : " + q);
+                        Vector<String> aux = new Vector<>();
+
+                        x3.SelectDataBase(q);
+                        ResultSet res2 = x3.GetTables();
+                        while (res2.next()) {
+                            String h2 = res2.getString("Tables_in_" + q);
+                            aux.add(h2);
+                        }
+                        
+                        vbd = new ventana_tabla(x3, ventana_principal.this, tp.getLastPathComponent().toString()
+                                , aux);
+                        setVisible(false);
+                        vbd.setVisible(true);
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+                        return;
+                    }
+                }
+            }
+        });
+        setLocationRelativeTo(null);
+    }
+
+    public void cargar() {
         try {
-            ResultSet res = x3.GetDtataBases();
+            Vector<DefaultMutableTreeNode> nodos = new Vector<>();
+            ResultSet res = x3.GetDataBases();
             String h;
+            int pos = 0, pos2;
             while (res.next()) {
                 h = res.getString(1);
                 System.out.println("data base: " + h);
                 vec.add(h);
-                tablas.addItem(h);
+                DefaultMutableTreeNode nuevo = new DefaultMutableTreeNode(h);
+                modelo_arbol.insertNodeInto(nuevo, raiz, pos);
+                nodos.add(nuevo);
+                pos++;
+            }
+
+            for (int i = 0; i < vec.size(); i++) {
+                x3.SelectDataBase(vec.get(i));
+                ResultSet res2 = x3.GetTables();
+                pos2 = 0;
+                while (res2.next()) {
+                    String h2 = res2.getString("Tables_in_" + vec.get(i));
+                    modelo_arbol.insertNodeInto(new DefaultMutableTreeNode(h2), nodos.get(i), pos2);
+                    pos2++;
+                }
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
         }
         System.out.println("");
+
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        tablas = new javax.swing.JComboBox();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setText("bases de datos");
-
-        tablas.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
-
-        jButton1.setText("seleccionar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         jButton2.setText("salir");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -61,38 +118,28 @@ public class ventana_principal extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane1.setViewportView(jTree1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 178, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addGap(15, 15, 15))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(tablas, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addGap(25, 25, 25))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(tablas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                .addComponent(jButton2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton2))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -103,23 +150,6 @@ public class ventana_principal extends javax.swing.JFrame {
         setVisible(false);
         ini.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (tablas.getSelectedIndex() == 0) {
-            return;
-        }
-        System.out.println("selecciono a " + vec.get(tablas.getSelectedIndex() - 1));
-        System.out.println("");
-        try {
-            x3.SelectDataBase(vec.get(tablas.getSelectedIndex() - 1));
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error", "Error al seleccionar la\n-base de datos", 1);
-            return;
-        }
-        vbd = new ventana_bd(x3, this, vec.get(tablas.getSelectedIndex() - 1));
-        setVisible(false);
-        vbd.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void main(String args[]) {
 
@@ -132,16 +162,24 @@ public class ventana_principal extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ventana_principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ventana_principal.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -156,9 +194,8 @@ public class ventana_principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JComboBox tablas;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
 }

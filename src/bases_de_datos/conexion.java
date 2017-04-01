@@ -51,7 +51,7 @@ public class conexion {
     
     //metodos ventana princiapl
     
-    public ResultSet GetDtataBases() throws SQLException{
+    public ResultSet GetDataBases() throws SQLException{
         return sta.executeQuery("SHOW DATABASES;");
     }
     
@@ -61,7 +61,7 @@ public class conexion {
     
     //metodos ventana bases de datos
     
-    public ResultSet GetTables(String bd) throws SQLException{
+    public ResultSet GetTables() throws SQLException{
         return sta.executeQuery("SHOW TABLES;");
     }
     

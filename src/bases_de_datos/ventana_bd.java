@@ -18,7 +18,7 @@ public class ventana_bd extends javax.swing.JFrame {
         setLocationRelativeTo(null);
 
         try {
-            ResultSet res = x3.GetTables(bd);
+            ResultSet res = x3.GetTables();
             while (res.next()) {
                 String h = res.getString("Tables_in_" + bd);
                 System.out.println("table : " + h);
@@ -106,7 +106,7 @@ public class ventana_bd extends javax.swing.JFrame {
         if (tablas.getSelectedIndex() == 0) {
             return;
         }
-        tab = new ventana_tabla(x3, this, vec.get(tablas.getSelectedIndex() - 1), vec);
+//        tab = new ventana_tabla(x3, this, vec.get(tablas.getSelectedIndex() - 1), vec);
         setVisible(false);
         tab.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
