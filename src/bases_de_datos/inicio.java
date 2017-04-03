@@ -13,7 +13,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener{
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
-        setTitle("bases de datos v0.7");
+        setTitle("bases de datos v0.81");
         jButton1.addKeyListener(this);
     }
 
