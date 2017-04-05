@@ -1,22 +1,25 @@
 package bases_de_datos;
 
+import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-public class inicio extends javax.swing.JFrame implements KeyListener{
-
+public class inicio extends javax.swing.JFrame implements KeyListener {
+    
     conexion x2;
     ventana_principal v;
-
+    
     public inicio() {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
-        setTitle("bases de datos v0.81");
+        setTitle("bases de datos v0.9");
         jButton1.addKeyListener(this);
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -34,11 +37,6 @@ public class inicio extends javax.swing.JFrame implements KeyListener{
         jLabel1.setText("puerto");
 
         puerto.setText("localhost");
-        puerto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                puertoActionPerformed(evt);
-            }
-        });
 
         jButton1.setText("iniciar sesion");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -78,11 +76,11 @@ public class inicio extends javax.swing.JFrame implements KeyListener{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(puerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(37, 37, 37)
+                .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addGap(30, 30, 30)
+                .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -95,6 +93,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener{
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        setCursor(Cursor.WAIT_CURSOR);
         x2 = new conexion(user.getText(), password.getText(), "jdbc:mysql://" + puerto.getText());
         if (!x2.conectar()) {
             JOptionPane.showMessageDialog(null, "Error al conectar con\nla base de datos", "Error", 0);
@@ -102,12 +101,10 @@ public class inicio extends javax.swing.JFrame implements KeyListener{
         }
         v = new ventana_principal(x2, this);
         v.setVisible(true);
+        setCursor(Cursor.DEFAULT_CURSOR);
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void puertoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_puertoActionPerformed
-    }//GEN-LAST:event_puertoActionPerformed
-
+    
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -150,13 +147,13 @@ public class inicio extends javax.swing.JFrame implements KeyListener{
 
     public void keyTyped(KeyEvent ke) {
     }
-
+    
     public void keyPressed(KeyEvent ke) {
         if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
             jButton1ActionPerformed(null);
         }
     }
-
+    
     public void keyReleased(KeyEvent ke) {
     }
 }

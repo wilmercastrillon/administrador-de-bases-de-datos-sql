@@ -1,7 +1,9 @@
 package bases_de_datos;
 
 //import java.awt.event.MouseEvent;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,12 +13,11 @@ import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-public class ventana_tabla extends javax.swing.JFrame {
+public class ventana_tabla extends javax.swing.JFrame{
 
     private final String tabla;
     private final conexion x;
@@ -38,7 +39,6 @@ public class ventana_tabla extends javax.swing.JFrame {
         EventoJtable(modelo);
         setEventoMouseClicked(jTable1);
         setLocationRelativeTo(null);
-//        setResizable(false);
     }
 
     public void cargar() {
@@ -235,8 +235,14 @@ public class ventana_tabla extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
         jButton5 = new javax.swing.JButton();
+        jButton9 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         tabla_columnas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -555,6 +561,13 @@ public class ventana_tabla extends javax.swing.JFrame {
             }
         });
 
+        jButton9.setText("Recargar");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -565,6 +578,8 @@ public class ventana_tabla extends javax.swing.JFrame {
                     .addComponent(jTabbedPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton9)
+                        .addGap(188, 188, 188)
                         .addComponent(jButton5)))
                 .addContainerGap())
         );
@@ -574,7 +589,9 @@ public class ventana_tabla extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton5)
+                    .addComponent(jButton9))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -667,6 +684,7 @@ public class ventana_tabla extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         ven_bd.setVisible(true);
+        x.desconectar();
         this.setVisible(false);
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -674,6 +692,7 @@ public class ventana_tabla extends javax.swing.JFrame {
         if (tipo_datos.getSelectedIndex() == 0 || nombre_col.getText().isEmpty()) {
             return;
         }
+        setCursor(Cursor.WAIT_CURSOR);
 
         String comando = nombre_col.getText() + " " + tipo_datos.getSelectedItem();
         if (!longitud.getText().isEmpty()) {
@@ -685,7 +704,7 @@ public class ventana_tabla extends javax.swing.JFrame {
         if (no_nulo.isSelected()) {
             comando += " not null";
         }
-
+        
         try {
             x.AgregarColumna(comando, tabla);
             cargar();
@@ -695,6 +714,7 @@ public class ventana_tabla extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
+        setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
@@ -702,6 +722,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             return;
         }
 
+        setCursor(Cursor.WAIT_CURSOR);
         try {
             x.BorrarColumna(tabla, columnas_borrar.getSelectedItem().toString());
             cargar();
@@ -711,6 +732,7 @@ public class ventana_tabla extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
+        setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -718,6 +740,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             return;
         }
 
+        setCursor(Cursor.WAIT_CURSOR);
         try {
             x.CrearLlavePrimaria(tabla, columnas_pk.getSelectedItem().toString());
             cargar();
@@ -727,6 +750,7 @@ public class ventana_tabla extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
+        setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void tabla_referenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabla_referenciaActionPerformed
@@ -738,6 +762,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             atributo_referencia.addItem("---------------");
             return;
         }
+        setCursor(Cursor.WAIT_CURSOR);
         try {
             ResultSet res = x.GetColumnas(tabla_referencia.getSelectedItem().toString());
             atributo_referencia.removeAllItems();
@@ -749,6 +774,7 @@ public class ventana_tabla extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
+        setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_tabla_referenciaActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -756,6 +782,7 @@ public class ventana_tabla extends javax.swing.JFrame {
                 || tabla_referencia.getSelectedIndex() == 0) {
             return;
         }
+        setCursor(Cursor.WAIT_CURSOR);
         try {
             x.CrearLlaveForanea(tabla, columna_fk.getSelectedItem().toString(),
                     tabla_referencia.getSelectedItem().toString(), atributo_referencia.getSelectedItem().toString());
@@ -763,8 +790,26 @@ public class ventana_tabla extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error al crear\nllave foranea", "Error", 0);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
-
+        setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        setCursor(Cursor.WAIT_CURSOR);
+        cargar();
+        setCursor(Cursor.DEFAULT_CURSOR);
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        
+        System.out.println("oprime " + evt.toString());
+        if (evt.getKeyCode() == KeyEvent.VK_F1) {
+            System.out.println("f1");
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            System.out.println("enter");
+        }
+        
+    }//GEN-LAST:event_formKeyPressed
 
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -812,6 +857,7 @@ public class ventana_tabla extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -843,4 +889,19 @@ public class ventana_tabla extends javax.swing.JFrame {
     private javax.swing.JComboBox tipo_datos;
     private javax.swing.JTextField valor_default;
     // End of variables declaration//GEN-END:variables
+
+//    public void keyTyped(KeyEvent ke) {
+//    }
+//
+//    public void keyPressed(KeyEvent ke) {
+//        if (ke.getKeyCode() == KeyEvent.VK_F1) {
+//            System.out.println("puso F1");
+//        }
+//        if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
+//            System.out.println("enter!!!");
+//        }
+//    }
+//
+//    public void keyReleased(KeyEvent ke) {
+//    }
 }

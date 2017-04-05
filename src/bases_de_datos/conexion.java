@@ -62,12 +62,13 @@ public class conexion {
         sta.executeUpdate("CREATE DATABASE " + nombre + ";");
     }
 
+    public void BorrarDataBase(String nombre) throws SQLException {
+        sta.executeUpdate("DROP DATABASE " + nombre + ";");
+    }
+
     public ResultSet TamanioDataBases() throws SQLException {
-        return sta.executeQuery("SELECT\n"
-                + "  table_schema \"Bases de Datos\",\n"
-                + "  sum( data_length + index_length ) / 1024 / 1024 \"Longitud en MB\"\n"
-                + "  FROM\n"
-                + "  information_schema.TABLES GROUP BY table_schema;");
+        return sta.executeQuery("SELECT table_schema \"database_name\", sum( data_length + index_length ) / 1024 /1024 \"Data Base Size in MB\", \n" +
+                "COUNT(*) \"numero_de_tablas\" FROM information_schema.TABLES GROUP BY table_schema;");
     }
 
     public ResultSet GetTables() throws SQLException {
@@ -77,13 +78,13 @@ public class conexion {
     public ResultSet GetColumnas(String table) throws SQLException {
         return sta.executeQuery("DESCRIBE " + table + ";");
     }
-    
-    public void CrearTabla(String nombre) throws SQLException{
-        sta.executeUpdate("Create Table " + nombre + " (ID int);");
+
+    public void CrearTabla(String nombre) throws SQLException {
+        sta.executeUpdate("Create Table " + nombre + " (ID int NOT NULL);");
     }
-    
-    public void BorrarTabla(String nombre) throws SQLException{
-        sta.executeUpdate("DROP " + nombre + ";");
+
+    public void BorrarTabla(String nombre) throws SQLException {
+        sta.executeUpdate("DROP TABLE IF EXISTS " + nombre + ";");
     }
 
     //metodos ventaba tablas
