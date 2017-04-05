@@ -8,10 +8,10 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class inicio extends javax.swing.JFrame implements KeyListener {
-    
+
     conexion x2;
     ventana_principal v;
-    
+
     public inicio() {
         initComponents();
         setResizable(false);
@@ -19,7 +19,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
         setTitle("bases de datos v0.9");
         jButton1.addKeyListener(this);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -96,6 +96,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
         setCursor(Cursor.WAIT_CURSOR);
         x2 = new conexion(user.getText(), password.getText(), "jdbc:mysql://" + puerto.getText());
         if (!x2.conectar()) {
+            setCursor(Cursor.DEFAULT_CURSOR);
             JOptionPane.showMessageDialog(null, "Error al conectar con\nla base de datos", "Error", 0);
             return;
         }
@@ -104,7 +105,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
         setCursor(Cursor.DEFAULT_CURSOR);
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
-    
+
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -147,13 +148,13 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
 
     public void keyTyped(KeyEvent ke) {
     }
-    
+
     public void keyPressed(KeyEvent ke) {
         if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
             jButton1ActionPerformed(null);
         }
     }
-    
+
     public void keyReleased(KeyEvent ke) {
     }
 }
