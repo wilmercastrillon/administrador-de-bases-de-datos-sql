@@ -2,6 +2,8 @@ package bases_de_datos;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +18,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-public class ventana_principal extends javax.swing.JFrame {
+public class ventana_principal extends javax.swing.JFrame implements KeyListener {
 
     inicio ini;
     ventana_tabla vbd;
@@ -25,11 +27,14 @@ public class ventana_principal extends javax.swing.JFrame {
     private DefaultMutableTreeNode raiz;
     private DefaultTableModel model_bd;
     private JPopupMenu menu2, menu1, menu3;
+    private Vector<DefaultMutableTreeNode> nodos;
 
     public ventana_principal(conexion x3, inicio ini) {
+        System.out.println("entro constructor||||||||||||||||||||||||||||");
         this.ini = ini;
         this.x3 = x3;
         initComponents();
+        System.out.println("cargo    ||||||||||||||||||||||||||||");
         cargar();
 
         menu1 = new JPopupMenu();
@@ -60,10 +65,16 @@ public class ventana_principal extends javax.swing.JFrame {
                     if (h == null) {
                         return;
                     }
+
                     try {
-                        x3.SelectDataBase(path.getPathComponent(1).toString());
+                        String h2 = path.getPathComponent(1).toString();
+                        x3.SelectDataBase(h2);
                         x3.CrearTabla(h);
-//                        cargar();
+                        for (DefaultMutableTreeNode nodo : nodos) {
+                            if (nodo.toString().equals(h2)) {
+                                modelo_arbol.insertNodeInto(new DefaultMutableTreeNode(h), nodo, 0);
+                            }
+                        }
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Error al crear tabla", "Error", 0);
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
@@ -77,7 +88,6 @@ public class ventana_principal extends javax.swing.JFrame {
 
                 TreePath path = jTree1.getSelectionPath();
                 if (path.getPathCount() == 3) {
-                    System.out.println("pasa");
                     if (JOptionPane.showConfirmDialog(null, "Seguro que quiere\nborrar la tabla")
                             != JOptionPane.YES_OPTION) {
                         return;
@@ -87,10 +97,13 @@ public class ventana_principal extends javax.swing.JFrame {
                         System.out.println("tabla " + path.getPathComponent(2).toString());
                         x3.SelectDataBase(path.getPathComponent(1).toString());
                         x3.BorrarTabla(path.getPathComponent(2).toString());
-//                        cargar();
+                        DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (path.getLastPathComponent());
+                        modelo_arbol.removeNodeFromParent(currentNode);
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Error al borrar tabla", "Error", 0);
                         JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Ha ocurrido un\nerror inesperado", "Error", 0);
                     }
                 }
             }
@@ -121,69 +134,11 @@ public class ventana_principal extends javax.swing.JFrame {
         menu2.add(borrarBD);
         menu3.add(borrar);
 
-        jTree1.addMouseListener(new java.awt.event.MouseListener() {
+        eventojtree();
+        jButton1.addKeyListener(this);
+        jButton2.addKeyListener(this);
+        jTree1.addKeyListener(this);
 
-            public void mouseClicked(MouseEvent me) {
-                TreePath tp = jTree1.getPathForLocation(me.getX(), me.getY());
-                if (tp == null) {
-                    return;
-                }
-
-                if (me.getButton() == MouseEvent.BUTTON3) {
-                    switch (tp.getPathCount()) {
-                        case 1:
-                            menu1.show(me.getComponent(), me.getX(), me.getY());
-                            break;
-                        case 2:
-                            menu2.show(me.getComponent(), me.getX(), me.getY());
-                            break;
-                        case 3:
-                            menu3.show(me.getComponent(), me.getX(), me.getY());
-                            break;
-                    }
-                    return;
-                }
-
-                if (me.getClickCount() == 1) {
-                    return;
-                }
-
-                if (tp.getPathCount() == 3) {
-                    try {
-                        String q = tp.getPathComponent(1).toString();
-                        Vector<String> aux = new Vector<>();
-
-                        x3.SelectDataBase(q);
-                        ResultSet res2 = x3.GetTables();
-                        while (res2.next()) {
-                            String h2 = res2.getString("Tables_in_" + q);
-                            aux.add(h2);
-                        }
-
-                        vbd = new ventana_tabla(x3, ventana_principal.this, tp.getLastPathComponent().toString(),
-                                aux);
-                        setVisible(false);
-                        vbd.setVisible(true);
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
-                        return;
-                    }
-                }
-            }
-
-            public void mousePressed(MouseEvent me) {
-            }
-
-            public void mouseReleased(MouseEvent me) {
-            }
-
-            public void mouseEntered(MouseEvent me) {
-            }
-
-            public void mouseExited(MouseEvent me) {
-            }
-        });
         setLocationRelativeTo(null);
     }
 
@@ -193,29 +148,27 @@ public class ventana_principal extends javax.swing.JFrame {
             modelo_arbol = new DefaultTreeModel(raiz);
             jTree1.setModel(modelo_arbol);
 
-            Vector<DefaultMutableTreeNode> nodos = new Vector<>();
-            Vector<String> vec = new Vector<>();
+            nodos = new Vector<>();
+            System.out.println("pido bases de datos");
             ResultSet res = x3.GetDataBases();
             String h;
             int pos = 0, pos2;
 
             while (res.next()) {
                 h = res.getString(1);
-//                System.out.println("data base: " + h);
-                vec.add(h);
                 DefaultMutableTreeNode nuevo = new DefaultMutableTreeNode(h);
                 modelo_arbol.insertNodeInto(nuevo, raiz, pos);
                 nodos.add(nuevo);
                 pos++;
             }
 
-            for (int i = 0; i < vec.size(); i++) {
-                x3.SelectDataBase(vec.get(i));
+            for (int i = 0; i < nodos.size(); i++) {
+                x3.SelectDataBase(nodos.get(i).toString());
                 ResultSet res2 = x3.GetTables();
                 pos2 = 0;
-                System.out.println("tabla " + vec.get(i));
+                System.out.println("tabla " + nodos.get(i).toString());
                 while (res2.next()) {
-                    String h2 = res2.getString("Tables_in_" + vec.get(i));
+                    String h2 = res2.getString("Tables_in_" + nodos.get(i).toString());
                     modelo_arbol.insertNodeInto(new DefaultMutableTreeNode(h2), nodos.get(i), pos2);
                     pos2++;
                 }
@@ -248,7 +201,72 @@ public class ventana_principal extends javax.swing.JFrame {
 
     }
 
-    public void cargar_arbol() {
+    private void eventojtree() {
+        jTree1.addMouseListener(new java.awt.event.MouseListener() {
+            public void mouseClicked(MouseEvent me) {
+                TreePath tp = jTree1.getPathForLocation(me.getX(), me.getY());
+                if (tp == null) {
+                    return;
+                }
+
+                if (me.getButton() == MouseEvent.BUTTON3) {
+                    switch (tp.getPathCount()) {
+                        case 1:
+                            menu1.show(me.getComponent(), me.getX(), me.getY());
+                            break;
+                        case 2:
+                            menu2.show(me.getComponent(), me.getX(), me.getY());
+                            break;
+                        case 3:
+                            menu3.show(me.getComponent(), me.getX(), me.getY());
+                            break;
+                    }
+                    return;
+                }
+
+                if (me.getClickCount() == 1) {
+                    return;
+                }
+
+                if (tp.getPathCount() == 3) {
+                    llamar_ventana_tabla(tp);
+                }
+            }
+
+            public void mousePressed(MouseEvent me) {
+            }
+
+            public void mouseReleased(MouseEvent me) {
+            }
+
+            public void mouseEntered(MouseEvent me) {
+            }
+
+            public void mouseExited(MouseEvent me) {
+            }
+        });
+    }
+
+    private void llamar_ventana_tabla(TreePath treepath) {
+        try {
+            String q = treepath.getPathComponent(1).toString();
+            Vector<String> aux = new Vector<>();
+
+            x3.SelectDataBase(q);
+            ResultSet res2 = x3.GetTables();
+            while (res2.next()) {
+                String h2 = res2.getString("Tables_in_" + q);
+                aux.add(h2);
+            }
+
+            vbd = new ventana_tabla(x3, ventana_principal.this, treepath.getLastPathComponent().toString(),
+                    aux);
+            setVisible(false);
+            vbd.setVisible(true);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -342,6 +360,7 @@ public class ventana_principal extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         setVisible(false);
+        x3.desconectar();
         ini.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -403,4 +422,35 @@ public class ventana_principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (e.getComponent() == jButton1) {
+                jButton1ActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == jButton2) {
+                jButton2ActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == jTree1) {
+                TreePath p = jTree1.getSelectionPath();
+                if (p.getPathCount() == 3) {
+                    llamar_ventana_tabla(p);
+                } else {
+                    if (jTree1.isExpanded(p)) {
+                        jTree1.collapsePath(p);
+                    } else {
+                        jTree1.expandPath(p);
+                    }
+                }
+            }
+        }
+    }
+
+    public void keyReleased(KeyEvent e) {
+    }
 }

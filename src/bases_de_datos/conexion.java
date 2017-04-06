@@ -67,8 +67,8 @@ public class conexion {
     }
 
     public ResultSet TamanioDataBases() throws SQLException {
-        return sta.executeQuery("SELECT table_schema \"database_name\", sum( data_length + index_length ) / 1024 /1024 \"Data Base Size in MB\", \n" +
-                "COUNT(*) \"numero_de_tablas\" FROM information_schema.TABLES GROUP BY table_schema;");
+        return sta.executeQuery("SELECT table_schema \"database_name\", sum( data_length + index_length ) / 1024 /1024 \"Data Base Size in MB\", \n"
+                + "COUNT(*) \"numero_de_tablas\" FROM information_schema.TABLES GROUP BY table_schema;");
     }
 
     public ResultSet GetTables() throws SQLException {
@@ -124,7 +124,7 @@ public class conexion {
 
     public int AgregarColumna(String datos, String tabla) throws SQLException {
         String z = "ALTER TABLE " + tabla + " ADD(" + datos + ");";
-//        System.out.println(z);
+        System.out.println(z);
         return sta.executeUpdate(z);
     }
 

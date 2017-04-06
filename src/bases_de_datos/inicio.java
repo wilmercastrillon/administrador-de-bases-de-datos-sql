@@ -16,7 +16,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
-        setTitle("bases de datos v0.9");
+        setTitle("bases de datos v0.93");
         jButton1.addKeyListener(this);
     }
 

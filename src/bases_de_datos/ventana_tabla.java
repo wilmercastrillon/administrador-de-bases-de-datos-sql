@@ -4,6 +4,7 @@ package bases_de_datos;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,8 +18,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-public class ventana_tabla extends javax.swing.JFrame{
-
+public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
+    
     private final String tabla;
     private final conexion x;
     private DefaultTableModel modelo, model_col;
@@ -26,7 +27,7 @@ public class ventana_tabla extends javax.swing.JFrame{
     private boolean inserta, agrega;
     private final Vector<String> otras_tablas;
     private JPopupMenu menu;
-
+    
     public ventana_tabla(conexion x2, ventana_principal vbd, String t, Vector t2) {
         x = x2;
         ven_bd = vbd;
@@ -35,12 +36,22 @@ public class ventana_tabla extends javax.swing.JFrame{
         otras_tablas = t2;
         initComponents();
         cargar();
-
+        
         EventoJtable(modelo);
         setEventoMouseClicked(jTable1);
+        crear_col.addKeyListener(this);
+        borrar_col.addKeyListener(this);
+        crear_pk.addKeyListener(this);
+        crear_pk.addKeyListener(this);
+        recargar.addKeyListener(this);
+        salir.addKeyListener(this);
+        registrar.addKeyListener(this);
+        delete.addKeyListener(this);
+        borrar_todo.addKeyListener(this);
+        
         setLocationRelativeTo(null);
     }
-
+    
     public void cargar() {
         try {
             System.out.println("cargar!!!");
@@ -73,7 +84,7 @@ public class ventana_tabla extends javax.swing.JFrame{
             columna_fk.addItem("---------------");
             atributo_referencia.addItem("---------------");
             tabla_referencia.addItem("---------------");
-
+            
             while (rs.next()) {
                 aux = new Vector<>();
                 String field = rs.getString("Field");
@@ -82,7 +93,7 @@ public class ventana_tabla extends javax.swing.JFrame{
                 aux.add(rs.getString("null"));
                 aux.add(rs.getString("key"));
                 aux.add(rs.getString("extra"));
-
+                
                 model_col.addRow(aux);
                 col.add(field);
                 modelo.addColumn(field);
@@ -93,10 +104,10 @@ public class ventana_tabla extends javax.swing.JFrame{
             }
             jTable1.setModel(modelo);
             tabla_columnas.setModel(model_col);
-
+            
             ResultSet res = x.GetDatos(tabla);
             int q = 0;
-
+            
             System.out.println(col.toString() + "\n");
             while (res.next()) {
                 Vector<String> datos = new Vector<>();
@@ -106,17 +117,16 @@ public class ventana_tabla extends javax.swing.JFrame{
                 modelo.addRow(datos);
                 q++;
             }
-
+            
             for (int i = 0; i < otras_tablas.size(); i++) {
                 tabla_referencia.addItem(otras_tablas.get(i));
             }
             agrega = false;
-
+            
             menu = new JPopupMenu();
             JMenuItem menuitem = new JMenuItem("borrar fila");
             menuitem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
-                    //delete from tabla where 
                     inserta = true;
                     int fila = jTable1.getSelectedRow();
                     System.out.println("fila seleccionada: " + jTable1.getSelectedRow());
@@ -129,7 +139,7 @@ public class ventana_tabla extends javax.swing.JFrame{
                         modelo.removeRow(fila);
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Error al borrar fila", "Error", 0);
-                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+//                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
                     }
                     inserta = false;
                 }
@@ -137,14 +147,14 @@ public class ventana_tabla extends javax.swing.JFrame{
             menu.add(menuitem);
             jTable1.setComponentPopupMenu(menu);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
         }
     }
-
+    
     private void EventoJtable(DefaultTableModel m) {
         m.addTableModelListener(new TableModelListener() {
-
+            
             public void tableChanged(TableModelEvent tme) {
                 if (inserta) {
                     return;
@@ -154,14 +164,14 @@ public class ventana_tabla extends javax.swing.JFrame{
                     System.out.println("columana modificada " + modelo.getColumnName(columna));
                     String comando = "SET " + modelo.getColumnName(columna) + " = '"
                             + modelo.getValueAt(fila, columna) + "' WHERE ";
-
+                    
                     for (int i = 0; i < modelo.getColumnCount(); i++) {
                         if (i != columna) {
                             comando += modelo.getColumnName(i) + " = '" + modelo.getValueAt(fila, i) + "' AND ";
                         }
                     }
                     comando = comando.substring(0, comando.length() - 5) + ";";
-
+                    
                     x.Actualizar(tabla, comando);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(null, "Error al modificar los datos", "Error", 0);
@@ -171,10 +181,10 @@ public class ventana_tabla extends javax.swing.JFrame{
             }
         });
     }
-
+    
     private void setEventoMouseClicked(javax.swing.JTable tbl) {
         tbl.addMouseListener(new java.awt.event.MouseAdapter() {
-
+            
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1) {
                     return;
@@ -186,7 +196,7 @@ public class ventana_tabla extends javax.swing.JFrame{
             }
         });
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -195,7 +205,7 @@ public class ventana_tabla extends javax.swing.JFrame{
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_columnas = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
+        crear_col = new javax.swing.JButton();
         nombre_col = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -207,12 +217,12 @@ public class ventana_tabla extends javax.swing.JFrame{
         longitud = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
         columnas_borrar = new javax.swing.JComboBox();
-        jButton6 = new javax.swing.JButton();
+        borrar_col = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         columnas_pk = new javax.swing.JComboBox();
-        jButton7 = new javax.swing.JButton();
+        crear_pk = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JSeparator();
-        jButton8 = new javax.swing.JButton();
+        crear_fk = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         atributo_referencia = new javax.swing.JComboBox();
         jLabel9 = new javax.swing.JLabel();
@@ -221,21 +231,21 @@ public class ventana_tabla extends javax.swing.JFrame{
         columna_fk = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        registrar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         registro = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jcombobox_columnas = new javax.swing.JComboBox();
-        jButton2 = new javax.swing.JButton();
+        delete = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         borrar = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton3 = new javax.swing.JButton();
+        borrar_todo = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JSeparator();
-        jButton5 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
+        salir = new javax.swing.JButton();
+        recargar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -254,10 +264,10 @@ public class ventana_tabla extends javax.swing.JFrame{
         ));
         jScrollPane1.setViewportView(tabla_columnas);
 
-        jButton4.setText("Crear columna");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        crear_col.setText("Crear columna");
+        crear_col.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                crear_colActionPerformed(evt);
             }
         });
 
@@ -265,7 +275,7 @@ public class ventana_tabla extends javax.swing.JFrame{
 
         jLabel6.setText("tipo de dato");
 
-        tipo_datos.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-------------", "INT", "BIGINT", "FLOAT", "DOUBLE", "CHAR", "VARCHAR", "DATE", "TIME" }));
+        tipo_datos.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-------------", "SMALLINT", "INT", "BIGINT", "FLOAT", "DOUBLE", "DECIMAL", "CHAR", "VARCHAR", "TEXT", "DATE", "TIME", "YEAR", "DATETIME", "TIMESTAMP", "BYNARY", "BLOB", "LONGBLOB" }));
 
         boton_default.setText("Default");
 
@@ -275,26 +285,26 @@ public class ventana_tabla extends javax.swing.JFrame{
 
         columnas_borrar.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
 
-        jButton6.setText("Borrar columna");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        borrar_col.setText("Borrar columna");
+        borrar_col.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                borrar_colActionPerformed(evt);
             }
         });
 
         columnas_pk.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
 
-        jButton7.setText("Crear llave primaria");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        crear_pk.setText("Crear llave primaria");
+        crear_pk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                crear_pkActionPerformed(evt);
             }
         });
 
-        jButton8.setText("Crear llave foranea");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        crear_fk.setText("Crear llave foranea");
+        crear_fk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                crear_fkActionPerformed(evt);
             }
         });
 
@@ -327,7 +337,7 @@ public class ventana_tabla extends javax.swing.JFrame{
                             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jButton4)
+                                .addComponent(crear_col)
                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                     .addComponent(jLabel5)
                                     .addGap(18, 18, 18)
@@ -347,16 +357,16 @@ public class ventana_tabla extends javax.swing.JFrame{
                                     .addGap(18, 18, 18)
                                     .addComponent(no_nulo))
                                 .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(jButton6)
+                                    .addComponent(borrar_col)
                                     .addGap(18, 18, 18)
                                     .addComponent(columnas_borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(jButton7)
+                                    .addComponent(crear_pk)
                                     .addGap(18, 18, 18)
                                     .addComponent(columnas_pk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jSeparator4))
                         .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -369,7 +379,7 @@ public class ventana_tabla extends javax.swing.JFrame{
                                 .addComponent(tabla_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton8)
+                            .addComponent(crear_fk)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addGap(18, 18, 18)
@@ -399,18 +409,18 @@ public class ventana_tabla extends javax.swing.JFrame{
                             .addComponent(valor_default, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(no_nulo))
                         .addGap(18, 18, 18)
-                        .addComponent(jButton4)
+                        .addComponent(crear_col)
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton6)
+                            .addComponent(borrar_col)
                             .addComponent(columnas_borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton7)
+                            .addComponent(crear_pk)
                             .addComponent(columnas_pk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -425,7 +435,7 @@ public class ventana_tabla extends javax.swing.JFrame{
                     .addComponent(jLabel8)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(atributo_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton8)))
+                        .addComponent(crear_fk)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -433,10 +443,10 @@ public class ventana_tabla extends javax.swing.JFrame{
 
         jLabel1.setText("agregar nueva tupla");
 
-        jButton1.setText("registrar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        registrar.setText("registrar");
+        registrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                registrarActionPerformed(evt);
             }
         });
 
@@ -455,10 +465,10 @@ public class ventana_tabla extends javax.swing.JFrame{
 
         jcombobox_columnas.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "---------------" }));
 
-        jButton2.setText("borrar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        delete.setText("borrar");
+        delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                deleteActionPerformed(evt);
             }
         });
 
@@ -482,10 +492,10 @@ public class ventana_tabla extends javax.swing.JFrame{
         ));
         jScrollPane2.setViewportView(jTable1);
 
-        jButton3.setText("borrar todo");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        borrar_todo.setText("borrar todo");
+        borrar_todo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                borrar_todoActionPerformed(evt);
             }
         });
 
@@ -499,13 +509,13 @@ public class ventana_tabla extends javax.swing.JFrame{
                     .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel1)
-                        .addComponent(jButton1)
-                        .addComponent(jButton2)
+                        .addComponent(registrar)
+                        .addComponent(delete)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel3)
                             .addGap(18, 18, 18)
                             .addComponent(jcombobox_columnas, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jButton3)
+                        .addComponent(borrar_todo)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel4)
                             .addGap(18, 18, 18)
@@ -530,7 +540,7 @@ public class ventana_tabla extends javax.swing.JFrame{
                         .addGap(18, 18, 18)
                         .addComponent(registro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1)
+                        .addComponent(registrar)
                         .addGap(50, 50, 50)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -542,11 +552,11 @@ public class ventana_tabla extends javax.swing.JFrame{
                             .addComponent(jLabel4)
                             .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jButton2)
+                        .addComponent(delete)
                         .addGap(30, 30, 30)
                         .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton3)
+                        .addComponent(borrar_todo)
                         .addGap(0, 20, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
@@ -554,17 +564,17 @@ public class ventana_tabla extends javax.swing.JFrame{
 
         jTabbedPane1.addTab("Datos", jPanel1);
 
-        jButton5.setText("salir");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        salir.setText("salir");
+        salir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                salirActionPerformed(evt);
             }
         });
 
-        jButton9.setText("Recargar");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        recargar.setText("Recargar");
+        recargar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                recargarActionPerformed(evt);
             }
         });
 
@@ -578,9 +588,9 @@ public class ventana_tabla extends javax.swing.JFrame{
                     .addComponent(jTabbedPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton9)
+                        .addComponent(recargar)
                         .addGap(188, 188, 188)
-                        .addComponent(jButton5)))
+                        .addComponent(salir)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -590,8 +600,8 @@ public class ventana_tabla extends javax.swing.JFrame{
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(jButton9))
+                    .addComponent(salir)
+                    .addComponent(recargar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -602,7 +612,7 @@ public class ventana_tabla extends javax.swing.JFrame{
 
     }//GEN-LAST:event_registroActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void registrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registrarActionPerformed
         inserta = true;
         String h[] = registro.getText().split(",");
         StringBuilder str = new StringBuilder("'");
@@ -620,7 +630,7 @@ public class ventana_tabla extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
         inserta = false;
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_registrarActionPerformed
 
     private void registroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_registroKeyTyped
 //        char tecla = evt.getKeyChar();
@@ -629,19 +639,19 @@ public class ventana_tabla extends javax.swing.JFrame{
 //        }
     }//GEN-LAST:event_registroKeyTyped
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
         if (jcombobox_columnas.getSelectedIndex() == 0) {
             return;
         }
         inserta = true;
-
+        
         try {
             String h = jcombobox_columnas.getSelectedItem().toString();
             x.borrar(h, borrar.getText(), tabla);
-
+            
             for (int i = 0; i < modelo.getColumnCount(); i++) {
                 if (h.equals(modelo.getColumnName(i))) {
-
+                    
                     for (int j = 0; j < modelo.getRowCount(); j++) {
                         if (modelo.getValueAt(j, i).toString().equals(borrar.getText())) {
                             modelo.removeRow(j);
@@ -657,18 +667,18 @@ public class ventana_tabla extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(null, "Ha ocurrido un\nerror inesperado", "Error", 0);
         }
         inserta = false;
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_deleteActionPerformed
 
     private void borrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_borrarActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void borrar_todoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrar_todoActionPerformed
         int opcion = JOptionPane.showConfirmDialog(null, "Seguro que desea borrar la\ninformacion de la tabla");
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-
+        
         inserta = true;
         try {
             x.BorrarTodo(tabla);
@@ -680,29 +690,28 @@ public class ventana_tabla extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
         inserta = false;
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_borrar_todoActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirActionPerformed
         ven_bd.setVisible(true);
-        x.desconectar();
         this.setVisible(false);
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_salirActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void crear_colActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_colActionPerformed
         if (tipo_datos.getSelectedIndex() == 0 || nombre_col.getText().isEmpty()) {
             return;
         }
         setCursor(Cursor.WAIT_CURSOR);
-
+        
         String comando = nombre_col.getText() + " " + tipo_datos.getSelectedItem();
         if (!longitud.getText().isEmpty()) {
             comando += "(" + longitud.getText() + ")";
         }
         if (boton_default.isSelected()) {
-            comando += " default '" + valor_default.getText() + "'";
+            comando += " DEFAULT '" + valor_default.getText() + "'";
         }
         if (no_nulo.isSelected()) {
-            comando += " not null";
+            comando += " NOT NULL";
         }
         
         try {
@@ -715,13 +724,13 @@ public class ventana_tabla extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
         setCursor(Cursor.DEFAULT_CURSOR);
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_crear_colActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void borrar_colActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrar_colActionPerformed
         if (columnas_borrar.getSelectedIndex() == 0) {
             return;
         }
-
+        
         setCursor(Cursor.WAIT_CURSOR);
         try {
             x.BorrarColumna(tabla, columnas_borrar.getSelectedItem().toString());
@@ -733,13 +742,13 @@ public class ventana_tabla extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
         setCursor(Cursor.DEFAULT_CURSOR);
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_borrar_colActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void crear_pkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_pkActionPerformed
         if (columnas_pk.getSelectedIndex() == 0) {
             return;
         }
-
+        
         setCursor(Cursor.WAIT_CURSOR);
         try {
             x.CrearLlavePrimaria(tabla, columnas_pk.getSelectedItem().toString());
@@ -751,7 +760,7 @@ public class ventana_tabla extends javax.swing.JFrame{
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado", "Error", 0);
         }
         setCursor(Cursor.DEFAULT_CURSOR);
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }//GEN-LAST:event_crear_pkActionPerformed
 
     private void tabla_referenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tabla_referenciaActionPerformed
         if (agrega) {
@@ -777,7 +786,7 @@ public class ventana_tabla extends javax.swing.JFrame{
         setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_tabla_referenciaActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+    private void crear_fkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_fkActionPerformed
         if (atributo_referencia.getSelectedIndex() == 0 || atributo_referencia.getSelectedIndex() == 0
                 || tabla_referencia.getSelectedIndex() == 0) {
             return;
@@ -786,18 +795,19 @@ public class ventana_tabla extends javax.swing.JFrame{
         try {
             x.CrearLlaveForanea(tabla, columna_fk.getSelectedItem().toString(),
                     tabla_referencia.getSelectedItem().toString(), atributo_referencia.getSelectedItem().toString());
+            cargar();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Error al crear\nllave foranea", "Error", 0);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
         }
         setCursor(Cursor.DEFAULT_CURSOR);
-    }//GEN-LAST:event_jButton8ActionPerformed
+    }//GEN-LAST:event_crear_fkActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void recargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recargarActionPerformed
         setCursor(Cursor.WAIT_CURSOR);
         cargar();
         setCursor(Cursor.DEFAULT_CURSOR);
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }//GEN-LAST:event_recargarActionPerformed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         
@@ -808,9 +818,9 @@ public class ventana_tabla extends javax.swing.JFrame{
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             System.out.println("enter");
         }
-        
-    }//GEN-LAST:event_formKeyPressed
 
+    }//GEN-LAST:event_formKeyPressed
+    
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -845,19 +855,16 @@ public class ventana_tabla extends javax.swing.JFrame{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox atributo_referencia;
     private javax.swing.JTextField borrar;
+    private javax.swing.JButton borrar_col;
+    private javax.swing.JButton borrar_todo;
     private javax.swing.JRadioButton boton_default;
     private javax.swing.JComboBox columna_fk;
     private javax.swing.JComboBox columnas_borrar;
     private javax.swing.JComboBox columnas_pk;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
+    private javax.swing.JButton crear_col;
+    private javax.swing.JButton crear_fk;
+    private javax.swing.JButton crear_pk;
+    private javax.swing.JButton delete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -883,25 +890,59 @@ public class ventana_tabla extends javax.swing.JFrame{
     private javax.swing.JTextField longitud;
     private javax.swing.JRadioButton no_nulo;
     private javax.swing.JTextField nombre_col;
+    private javax.swing.JButton recargar;
+    private javax.swing.JButton registrar;
     private javax.swing.JTextField registro;
+    private javax.swing.JButton salir;
     private javax.swing.JTable tabla_columnas;
     private javax.swing.JComboBox tabla_referencia;
     private javax.swing.JComboBox tipo_datos;
     private javax.swing.JTextField valor_default;
     // End of variables declaration//GEN-END:variables
 
-//    public void keyTyped(KeyEvent ke) {
-//    }
-//
-//    public void keyPressed(KeyEvent ke) {
-//        if (ke.getKeyCode() == KeyEvent.VK_F1) {
-//            System.out.println("puso F1");
-//        }
-//        if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
-//            System.out.println("enter!!!");
-//        }
-//    }
-//
-//    public void keyReleased(KeyEvent ke) {
-//    }
+    public void keyTyped(KeyEvent e) {
+    }
+    
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (e.getComponent() == crear_col) {
+                crear_colActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == borrar_col) {
+                borrar_colActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == crear_pk) {
+                crear_pkActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == crear_fk) {
+                crear_pkActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == recargar) {
+                recargarActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == salir) {
+                salirActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == registrar) {
+                registrarActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == delete) {
+                deleteActionPerformed(null);
+                return;
+            }
+            if (e.getComponent() == borrar_todo) {
+                borrar_todoActionPerformed(null);
+            }
+        }
+    }
+    
+    public void keyReleased(KeyEvent e) {
+    }
 }
