@@ -10,25 +10,22 @@ public class conexion {
 
     private Connection con;
     private Statement sta;
-    private final String driver = "com.mysql.jdbc.Driver";
-    private final String user;
-    private final String password;
-    private final String url;
+    private final String driver;
+    consola cons;
 
-    public conexion(String user, String password, String url) {
-        this.user = user;
-        this.password = password;
-        this.url = url;
+    public conexion() {
+        driver = "com.mysql.jdbc.Driver";
+        cons = new consola(this);
     }
 
-    public boolean conectar() {
+    public boolean conectar(String user, String password, String url) {
         con = null;
         try {
             Class.forName(driver);
             con = DriverManager.getConnection(url, user, password);
             sta = con.createStatement();
             if (con != null) {
-                System.out.println("se ha conectado!!!\n");
+                cons.agregar("se ha conectado!!!");
             } else {
                 System.out.println("no se ha conectado\n");
                 return false;
@@ -46,104 +43,142 @@ public class conexion {
 
     public void desconectar() {
         con = null;
-        System.out.println("desconectado");
+        sta = null;
+        cons.agregar("desconectado");
+    }
+    
+    public void EjecutarUpdate(String comando) throws SQLException{
+        if (sta == null) {
+            return;
+        }
+        sta.executeUpdate(comando);
+        cons.agregar(comando);
+    }
+    
+    public ResultSet EjecutarConsulta(String comando) throws SQLException{
+        if (sta == null) {
+            return null;
+        }
+        ResultSet r = sta.executeQuery(comando);
+        cons.agregar(comando);
+        return r;
     }
 
     //metodos ventana princiapl
     public ResultSet GetDataBases() throws SQLException {
-        return sta.executeQuery("SHOW DATABASES;");
+        String z = "SHOW DATABASES;";
+        cons.agregar(z);
+        return sta.executeQuery(z);
     }
 
     public void SelectDataBase(String bd) throws SQLException {
-        sta.executeUpdate("USE " + bd + ";");
+        String z = "USE " + bd + ";";
+        cons.agregar(z);
+        sta.executeUpdate(z);
     }
 
     public void CrearDataBase(String nombre) throws SQLException {
-        sta.executeUpdate("CREATE DATABASE " + nombre + ";");
+        String z = "CREATE DATABASE " + nombre + ";";
+        cons.agregar(z);
+        sta.executeUpdate(z);
     }
 
     public void BorrarDataBase(String nombre) throws SQLException {
-        sta.executeUpdate("DROP DATABASE " + nombre + ";");
+        String z = "DROP DATABASE " + nombre + ";";
+        cons.agregar(z);
+        sta.executeUpdate(z);
     }
 
     public ResultSet TamanioDataBases() throws SQLException {
-        return sta.executeQuery("SELECT table_schema \"database_name\", sum( data_length + index_length ) / 1024 /1024 \"Data Base Size in MB\", \n"
-                + "COUNT(*) \"numero_de_tablas\" FROM information_schema.TABLES GROUP BY table_schema;");
+        String z = "SELECT table_schema \"database_name\", sum( data_length + index_length ) / 1024 /1024 \"Data Base Size in MB\", \n"
+                + "COUNT(*) \"numero_de_tablas\" FROM information_schema.TABLES GROUP BY table_schema;";
+//        cons.agregar(z);
+        return sta.executeQuery(z);
     }
 
     public ResultSet GetTables() throws SQLException {
-        return sta.executeQuery("SHOW TABLES;");
+        String z = "SHOW TABLES;";
+        cons.agregar(z);
+        return sta.executeQuery(z);
     }
 
     public ResultSet GetColumnas(String table) throws SQLException {
-        return sta.executeQuery("DESCRIBE " + table + ";");
+        String z = "DESCRIBE " + table + ";";
+        cons.agregar(z);
+        return sta.executeQuery(z);
     }
 
     public void CrearTabla(String nombre) throws SQLException {
-        sta.executeUpdate("Create Table " + nombre + " (ID int NOT NULL);");
+        String z = "Create Table " + nombre + " (ID int NOT NULL);";
+        cons.agregar(z);
+        sta.executeUpdate(z);
     }
 
     public void BorrarTabla(String nombre) throws SQLException {
-        sta.executeUpdate("DROP TABLE IF EXISTS " + nombre + ";");
+        String z = "DROP TABLE IF EXISTS " + nombre + ";";
+        cons.agregar(z);
+        sta.executeUpdate(z);
     }
 
     //metodos ventaba tablas
     public int agregar(String datos, String table) throws SQLException {
         String z = "INSERT INTO " + table + " values(" + datos + ");";
-//        System.out.println(z);
+        cons.agregar(z);
         return sta.executeUpdate(z);
     }
 
     public ResultSet GetDatos(String table) throws SQLException {
         String z = "SELECT * FROM " + table + ";";
-//        System.out.println(z);
+        cons.agregar(z);
         return sta.executeQuery(z);
     }
 
     public void borrar(String dato, String valor, String table) throws SQLException {
         String z = "DELETE FROM " + table + " WHERE " + dato + " = '" + valor + "';";
-        System.out.println(z);
+        cons.agregar(z);
         sta.executeUpdate(z);
     }
 
     public void BorrarFila(String datos, String table) throws SQLException {
         String z = "DELETE FROM " + table + " WHERE" + datos + ";";
-        System.out.println(z);
+        cons.agregar(z);
         sta.executeUpdate(z);
     }
 
     public int Actualizar(String tabla, String datos) throws SQLException {
         String z = "UPDATE " + tabla + " " + datos;
-//        System.out.println(z);
+        cons.agregar(z);
         return sta.executeUpdate(z);
     }
 
     public int BorrarTodo(String tabla) throws SQLException {
-        return sta.executeUpdate("DELETE FROM " + tabla + ";");
+        String z = "DELETE FROM " + tabla + ";";
+        cons.agregar(z);
+        return sta.executeUpdate(z);
     }
 
     public int AgregarColumna(String datos, String tabla) throws SQLException {
         String z = "ALTER TABLE " + tabla + " ADD(" + datos + ");";
-        System.out.println(z);
+        cons.agregar(z);
         return sta.executeUpdate(z);
     }
 
     public int BorrarColumna(String tabla, String columna) throws SQLException {
         String z = "ALTER TABLE " + tabla + " DROP " + columna + ";";
-//        System.out.println(z);
+        cons.agregar(z);
         return sta.executeUpdate(z);
     }
 
     public int CrearLlavePrimaria(String tabla, String columna) throws SQLException {
         String z = "ALTER TABLE " + tabla + " ADD PRIMARY KEY (" + columna + ");";
-//        System.out.println(z);
+        cons.agregar(z);
         return sta.executeUpdate(z);
     }
 
     public int CrearLlaveForanea(String tabla, String atri, String tabla_ref, String atri_ref) throws SQLException {
         String z = "ALTER TABLE " + tabla + " ADD FOREIGN KEY(" + atri
                 + ") REFERENCES " + tabla_ref + "(" + atri_ref + ");";
-//        System.out.println(z);
+//        cons.agregar(z);
         return sta.executeUpdate(z);
     }
 }

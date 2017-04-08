@@ -19,7 +19,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
-    
+
     private final String tabla;
     private final conexion x;
     private DefaultTableModel modelo, model_col;
@@ -27,7 +27,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
     private boolean inserta, agrega;
     private final Vector<String> otras_tablas;
     private JPopupMenu menu;
-    
+
     public ventana_tabla(conexion x2, ventana_principal vbd, String t, Vector t2) {
         x = x2;
         ven_bd = vbd;
@@ -36,7 +36,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         otras_tablas = t2;
         initComponents();
         cargar();
-        
+
         EventoJtable(modelo);
         setEventoMouseClicked(jTable1);
         crear_col.addKeyListener(this);
@@ -48,14 +48,15 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         registrar.addKeyListener(this);
         delete.addKeyListener(this);
         borrar_todo.addKeyListener(this);
-        
+        jButton1.addKeyListener(this);
+
+//        setResizable(false);
+        setTitle(tabla);
         setLocationRelativeTo(null);
     }
-    
+
     public void cargar() {
         try {
-            System.out.println("cargar!!!");
-            System.out.println("entran : " + otras_tablas.toString());
             agrega = true;
             modelo = new DefaultTableModel();
             model_col = new DefaultTableModel() {
@@ -84,7 +85,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             columna_fk.addItem("---------------");
             atributo_referencia.addItem("---------------");
             tabla_referencia.addItem("---------------");
-            
+
             while (rs.next()) {
                 aux = new Vector<>();
                 String field = rs.getString("Field");
@@ -93,7 +94,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                 aux.add(rs.getString("null"));
                 aux.add(rs.getString("key"));
                 aux.add(rs.getString("extra"));
-                
+
                 model_col.addRow(aux);
                 col.add(field);
                 modelo.addColumn(field);
@@ -104,11 +105,10 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             }
             jTable1.setModel(modelo);
             tabla_columnas.setModel(model_col);
-            
+
             ResultSet res = x.GetDatos(tabla);
             int q = 0;
-            
-            System.out.println(col.toString() + "\n");
+
             while (res.next()) {
                 Vector<String> datos = new Vector<>();
                 for (int i = 0; i < col.size(); i++) {
@@ -117,19 +117,18 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                 modelo.addRow(datos);
                 q++;
             }
-            
+
             for (int i = 0; i < otras_tablas.size(); i++) {
                 tabla_referencia.addItem(otras_tablas.get(i));
             }
             agrega = false;
-            
+
             menu = new JPopupMenu();
             JMenuItem menuitem = new JMenuItem("borrar fila");
             menuitem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(ActionEvent ae) {
                     inserta = true;
                     int fila = jTable1.getSelectedRow();
-                    System.out.println("fila seleccionada: " + jTable1.getSelectedRow());
                     String comando = "";
                     for (int i = 0; i < col.size(); i++) {
                         comando += " " + col.get(i) + " = '" + jTable1.getValueAt(fila, i) + "' AND";
@@ -139,7 +138,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                         modelo.removeRow(fila);
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(null, "Error al borrar fila", "Error", 0);
-//                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
+                        JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", 0);
                     }
                     inserta = false;
                 }
@@ -151,27 +150,26 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
         }
     }
-    
+
     private void EventoJtable(DefaultTableModel m) {
         m.addTableModelListener(new TableModelListener() {
-            
+
             public void tableChanged(TableModelEvent tme) {
                 if (inserta) {
                     return;
                 }
                 try {
                     int fila = tme.getFirstRow(), columna = tme.getColumn();
-                    System.out.println("columana modificada " + modelo.getColumnName(columna));
                     String comando = "SET " + modelo.getColumnName(columna) + " = '"
                             + modelo.getValueAt(fila, columna) + "' WHERE ";
-                    
+
                     for (int i = 0; i < modelo.getColumnCount(); i++) {
                         if (i != columna) {
                             comando += modelo.getColumnName(i) + " = '" + modelo.getValueAt(fila, i) + "' AND ";
                         }
                     }
                     comando = comando.substring(0, comando.length() - 5) + ";";
-                    
+
                     x.Actualizar(tabla, comando);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(null, "Error al modificar los datos", "Error", 0);
@@ -181,22 +179,21 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             }
         });
     }
-    
+
     private void setEventoMouseClicked(javax.swing.JTable tbl) {
         tbl.addMouseListener(new java.awt.event.MouseAdapter() {
-            
+
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 1) {
                     return;
                 }
-                System.out.println("doble click");
                 java.awt.Point point = e.getPoint();
                 int currentRow = tbl.rowAtPoint(point);
                 tbl.setRowSelectionInterval(currentRow, currentRow);
             }
         });
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -246,6 +243,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         jSeparator5 = new javax.swing.JSeparator();
         salir = new javax.swing.JButton();
         recargar = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addKeyListener(new java.awt.event.KeyAdapter() {
@@ -365,8 +363,8 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                                     .addGap(18, 18, 18)
                                     .addComponent(columnas_pk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jSeparator4))
-                        .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -391,8 +389,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
@@ -423,7 +420,9 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                             .addComponent(crear_pk)
                             .addComponent(columnas_pk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
@@ -436,7 +435,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(atributo_referencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(crear_fk)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Editar Tabla", jPanel2);
@@ -505,27 +504,28 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel1)
-                        .addComponent(registrar)
-                        .addComponent(delete)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addGap(18, 18, 18)
-                            .addComponent(jcombobox_columnas, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(borrar_todo)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel4)
-                            .addGap(18, 18, 18)
-                            .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(registro, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jSeparator5))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(registrar)
+                            .addComponent(delete)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(jcombobox_columnas, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(18, 18, 18)
+                                .addComponent(borrar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(registro, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jSeparator5))
+                    .addComponent(borrar_todo))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -578,6 +578,13 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             }
         });
 
+        jButton1.setText("consola");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -588,6 +595,8 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                     .addComponent(jTabbedPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(160, 160, 160)
                         .addComponent(recargar)
                         .addGap(188, 188, 188)
                         .addComponent(salir)))
@@ -597,12 +606,13 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(salir)
-                    .addComponent(recargar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(recargar)
+                    .addComponent(jButton1))
+                .addContainerGap())
         );
 
         pack();
@@ -644,14 +654,14 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             return;
         }
         inserta = true;
-        
+
         try {
             String h = jcombobox_columnas.getSelectedItem().toString();
             x.borrar(h, borrar.getText(), tabla);
-            
+
             for (int i = 0; i < modelo.getColumnCount(); i++) {
                 if (h.equals(modelo.getColumnName(i))) {
-                    
+
                     for (int j = 0; j < modelo.getRowCount(); j++) {
                         if (modelo.getValueAt(j, i).toString().equals(borrar.getText())) {
                             modelo.removeRow(j);
@@ -678,7 +688,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        
+
         inserta = true;
         try {
             x.BorrarTodo(tabla);
@@ -702,7 +712,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
             return;
         }
         setCursor(Cursor.WAIT_CURSOR);
-        
+
         String comando = nombre_col.getText() + " " + tipo_datos.getSelectedItem();
         if (!longitud.getText().isEmpty()) {
             comando += "(" + longitud.getText() + ")";
@@ -713,7 +723,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         if (no_nulo.isSelected()) {
             comando += " NOT NULL";
         }
-        
+
         try {
             x.AgregarColumna(comando, tabla);
             cargar();
@@ -730,7 +740,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         if (columnas_borrar.getSelectedIndex() == 0) {
             return;
         }
-        
+
         setCursor(Cursor.WAIT_CURSOR);
         try {
             x.BorrarColumna(tabla, columnas_borrar.getSelectedItem().toString());
@@ -748,7 +758,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
         if (columnas_pk.getSelectedIndex() == 0) {
             return;
         }
-        
+
         setCursor(Cursor.WAIT_CURSOR);
         try {
             x.CrearLlavePrimaria(tabla, columnas_pk.getSelectedItem().toString());
@@ -810,17 +820,17 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
     }//GEN-LAST:event_recargarActionPerformed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        
-        System.out.println("oprime " + evt.toString());
         if (evt.getKeyCode() == KeyEvent.VK_F1) {
-            System.out.println("f1");
         }
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            System.out.println("enter");
         }
 
     }//GEN-LAST:event_formKeyPressed
-    
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        x.cons.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -865,6 +875,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
     private javax.swing.JButton crear_fk;
     private javax.swing.JButton crear_pk;
     private javax.swing.JButton delete;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -902,7 +913,7 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
 
     public void keyTyped(KeyEvent e) {
     }
-    
+
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             if (e.getComponent() == crear_col) {
@@ -937,12 +948,16 @@ public class ventana_tabla extends javax.swing.JFrame implements KeyListener {
                 deleteActionPerformed(null);
                 return;
             }
+            if (e.getComponent() == jButton1) {
+                jButton1ActionPerformed(null);
+                return;
+            }
             if (e.getComponent() == borrar_todo) {
                 borrar_todoActionPerformed(null);
             }
         }
     }
-    
+
     public void keyReleased(KeyEvent e) {
     }
 }

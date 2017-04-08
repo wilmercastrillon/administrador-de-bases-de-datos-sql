@@ -30,11 +30,9 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
     private Vector<DefaultMutableTreeNode> nodos;
 
     public ventana_principal(conexion x3, inicio ini) {
-        System.out.println("entro constructor||||||||||||||||||||||||||||");
         this.ini = ini;
         this.x3 = x3;
         initComponents();
-        System.out.println("cargo    ||||||||||||||||||||||||||||");
         cargar();
 
         menu1 = new JPopupMenu();
@@ -139,6 +137,7 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
         jButton2.addKeyListener(this);
         jTree1.addKeyListener(this);
 
+        setTitle("Bases de datos");
         setLocationRelativeTo(null);
     }
 
@@ -149,7 +148,6 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
             jTree1.setModel(modelo_arbol);
 
             nodos = new Vector<>();
-            System.out.println("pido bases de datos");
             ResultSet res = x3.GetDataBases();
             String h;
             int pos = 0, pos2;
@@ -183,7 +181,6 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
             model_bd.addColumn("Longitud en MB");
             model_bd.addColumn("Numero de tablas");
             ResultSet res2 = x3.TamanioDataBases();
-            System.out.println("");
             while (res2.next()) {
                 Vector<String> aux = new Vector<>();
                 aux.add(res2.getString(1));
@@ -197,8 +194,6 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
             JOptionPane.showMessageDialog(null, "Error al cargar datos", "Error", 0);
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", 0);
         }
-        System.out.println("");
-
     }
 
     private void eventojtree() {
@@ -448,6 +443,10 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
                     }
                 }
             }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_F2) {
+            x3.cons.setVisible(true);
         }
     }
 
