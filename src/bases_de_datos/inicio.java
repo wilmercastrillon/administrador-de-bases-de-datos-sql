@@ -135,6 +135,9 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (v != null && v.isVisible()) {
+            return;
+        }
         setCursor(Cursor.WAIT_CURSOR);
         if (!x2.conectar(user.getText(), password.getText(), "jdbc:mysql://" + puerto.getText())) {
             setCursor(Cursor.DEFAULT_CURSOR);
@@ -157,7 +160,7 @@ public class inicio extends javax.swing.JFrame implements KeyListener {
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         JOptionPane.showMessageDialog(null, "Administrador de bases\nde datos SQL");
-        JOptionPane.showMessageDialog(null, "Version 1.0");
+        JOptionPane.showMessageDialog(null, "Version 1.04");
         JOptionPane.showMessageDialog(null, "desarrollado por:\nWilmer Castrillon");
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 

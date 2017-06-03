@@ -219,7 +219,7 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
                     return;
                 }
 
-                if (me.getClickCount() == 1) {
+                if (me.getClickCount() == 1 || me.getClickCount() > 2) {
                     return;
                 }
 
@@ -277,6 +277,7 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
         Tabla_BD = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         jRadioButton1.setText("jRadioButton1");
 
@@ -313,6 +314,13 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
             }
         });
 
+        jButton3.setText("consola");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -327,7 +335,8 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
                         .addGap(0, 355, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)
                         .addGap(101, 101, 101)
                         .addComponent(jButton2)))
@@ -345,7 +354,8 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton2)
-                            .addComponent(jButton1)))
+                            .addComponent(jButton1)
+                            .addComponent(jButton3)))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
@@ -364,6 +374,10 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
         cargar();
         setCursor(Cursor.DEFAULT_CURSOR);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        x3.cons.setVisible(true);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     public static void main(String args[]) {
 
@@ -411,6 +425,7 @@ public class ventana_principal extends javax.swing.JFrame implements KeyListener
     private javax.swing.JTable Tabla_BD;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JScrollPane jScrollPane1;

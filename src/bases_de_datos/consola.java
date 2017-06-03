@@ -2,10 +2,14 @@ package bases_de_datos;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -14,12 +18,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 
-public class consola extends javax.swing.JFrame implements KeyListener{
+public class consola extends javax.swing.JFrame implements KeyListener {
 
     private DefaultListModel<String> modelo_lista;
     private conexion x4;
-    private JPopupMenu menu;
+    private JPopupMenu menu, menu2, menu3;
 
     public consola(conexion q) {
         x4 = q;
@@ -27,17 +32,20 @@ public class consola extends javax.swing.JFrame implements KeyListener{
         modelo_lista = new DefaultListModel<>();
         jList1.setModel(modelo_lista);
         menu = new JPopupMenu();
+        menu2 = new JPopupMenu();
+        menu3 = new JPopupMenu();
+
         JMenuItem item = new JMenuItem("Limpiar consola");
         item.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 limpiar();
-                System.out.println("index seleccionado: " + jList1.getSelectedIndex());
+//                System.out.println("index seleccionado: " + jList1.getSelectedIndex());
             }
         });
         JMenuItem item2 = new JMenuItem("copiar");
         item2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                System.out.println("index seleccionado: " + jList1.getSelectedIndex());
+//                System.out.println("index seleccionado: " + jList1.getSelectedIndex());
                 if (jList1.getSelectedIndex() != -1) {
                     String texto = modelo_lista.get(jList1.getSelectedIndex());
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -46,10 +54,42 @@ public class consola extends javax.swing.JFrame implements KeyListener{
                 }
             }
         });
+
+        JMenuItem item3 = new JMenuItem("pegar");
+        item3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                pegar(consulta);
+            }
+        });
+        JMenuItem item4 = new JMenuItem("pegar");
+        item4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                pegar(update);
+            }
+        });
         menu.add(item2);
         menu.add(item);
         jList1.setComponentPopupMenu(menu);
+
+        menu2.add(item3);
+        consulta.setComponentPopupMenu(menu2);
+
+        menu3.add(item4);
+        update.setComponentPopupMenu(menu3);
+
         setTitle("consola");
+    }
+
+    private void pegar(JTextField jtex) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable trans = clipboard.getContents(null);
+
+        if (trans.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+            try {
+                jtex.setText("" + trans.getTransferData(DataFlavor.stringFlavor));
+            } catch (Exception ex) {
+            }
+        }
     }
 
     public void agregar(String c) {
@@ -172,7 +212,7 @@ public class consola extends javax.swing.JFrame implements KeyListener{
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         String comando = update.getText();
         if (comando.length() > 4) {
-            if (comando.substring(0, 4).equalsIgnoreCase("use ")) {
+            if (comando.trim().substring(0, 4).equalsIgnoreCase("use ")) {
                 JOptionPane.showMessageDialog(null, "comando no permitido\npara evitar conflictos", "Error", 0);
                 return;
             }
